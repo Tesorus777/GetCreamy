@@ -1,0 +1,34 @@
+:root {
+    /* #region Colors */
+
+    /* Main Colors */
+    --main-bg: hsl(58, 60%, 95%);
+    --alt-bg: white;
+    --main-text: black;
+    --shadow-color: darkgray;
+    --invalid-color: red;
+    /* HSL Naming Convention: "accent number"-saturation-lightness */
+    /* Saturation: low (0-35), medium(36-65), high(66-100) */
+    /* Lightness: dark(0-25), dim(25-50), light(51-75), bright(75-100) */
+
+    /* Accent Colors */
+    /* Creamy Yellow */
+    --accent-one-medium-bright: hsl(58, 50%, 90%);
+    --accent-one-medium-light: hsl(58, 50%, 70%);
+    /*--accent-one-medium-light: blue;*/
+    /* Blue */
+    --accent-two-high-bright: hsl(195, 100%, 90%);
+    --accent-two-high-light: hsl(195, 100%, 74%);
+    --accent-two-medium-light: hsl(195, 50%, 74%);
+    --accent-two-medium-dim: hsl(195, 50%, 25%);
+
+    /* #endregion Colors */
+
+    /* #region Font Size */
+
+    --main-font-size: 18px;
+    --logo-font-size: 18px;
+    --mobile-font-size: 16px;
+
+    /* #endregion Font Size */
+}

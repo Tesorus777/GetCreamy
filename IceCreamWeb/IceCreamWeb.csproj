@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="..\IceCream\DataAccessOptions.json" Link="DataAccessOptions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IceCream.DataAccessLibrary\IceCream.DataAccessLibrary.csproj" />
+    <ProjectReference Include="..\IceCreamLibrary\IceCream.DataLibrary.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\images\recipe\Matcha\" />
+    <Folder Include="wwwroot\lib\images\recipe\ChurroChocolateChunk\" />
+    <Folder Include="wwwroot\lib\images\recipe\HolidaySpirit\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="DataAccessOptions.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,93 @@
+﻿/* #region Container */
+
+div.carousel-container {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    row-gap: 1rem;
+}
+
+/* #endregion Container */
+
+/* #region Viewport */
+
+div.carousel-viewport {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    overflow-x: auto;
+    column-gap: 2px;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-radius: 1em;
+}
+
+    div.carousel-viewport::-webkit-scrollbar {
+        display: none;
+    }
+
+.carousel-object {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    width: 100%;
+    object-fit: contain;
+    user-select: none;
+}
+
+/* #endregion Viewport */
+
+/* #region Pagination */
+
+div.carousel-pagination {
+    display: grid;
+    grid-auto-flow: column;
+    justify-items: center;
+    gap: 0.15rem;
+}
+
+svg.carousel-pagination-arrow, svg.carousel-pagination-circle {
+    max-height: 2em;
+    fill: var(--accent-two-medium-light);
+}
+
+    svg.carousel-pagination-arrow:hover, svg.carousel-pagination-circle:hover {
+        fill: var(--accent-two-medium-dim);
+        filter: drop-shadow(0 0.15em 0.4em var(--shadow-color));
+        transform: translateY(-0.15em);
+    }
+
+    svg.carousel-pagination-arrow:active, svg.carousel-pagination-circle:active {
+        fill: var(--accent-two-medium-dim);
+        transform: translateY(0);
+    }
+
+svg.carousel-pagination-active {
+    fill: var(--accent-two-medium-dim);
+}
+
+
+/* #endregion Pagination*/
+
+/* #region Media Queries */
+
+/* Tablet */
+@media (max-width: 800px) {
+    svg.carousel-pagination-arrow:hover, svg.carousel-pagination-circle:hover {
+        fill: var(--accent-two-medium-dim);
+        filter: unset;
+        transform: translateY(0);
+    }
+
+    svg.carousel-pagination-arrow:active, svg.carousel-pagination-circle:active {
+        fill: var(--accent-two-medium-dim);
+        transform: translateY(0);
+    }
+}
+
+/* Mobile */
+/*@media (max-width: 500px) {
+
+}*/
+
+/* #endregion Media Queries */

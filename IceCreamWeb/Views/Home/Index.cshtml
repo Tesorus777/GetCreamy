@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["Title"] = "Home";
+
+    string suggestion_firstNamePattern = "[A-Za-z]{1,50}";
+    string suggestion_lastNamePattern = @"^[A-Za-z]+([ \-'][A-Za-z]+)*$"; // check this
+    string suggestion_lastNameMaximum = "50";
+    string suggestion_emailMaximum = "200";
+    string suggestion_flavorPattern = @"^[A-Za-z][A-Za-z\s]{0,50}$"; // check this
+    string suggestion_descriptionMaximum = "2500";
+}
+
+@section StyleSheets {
+    <link rel="stylesheet" href="~/css/home/homePage.css" asp-append-version="true" />
+}
+
+<div class="home-body">
+    <div id="HomeFeatured" class="home-item home-featured">
+        <h2 id="FeaturedName" class="home-header-decorate home-featured-name">Featured: </h2>
+        <a id="HomeFeaturedBody" class="home-featured-body">
+            <div id="HomeFeaturedImage" class="home-featured-image"></div>
+            <div id="FeaturedDescription" class="home-featured-description"></div>
+        </a>
+    </div>
+
+    <div id="HomeTrending" class="home-item home-trending">
+        <h2 class="home-header-decorate" >Trending</h2>
+    </div>
+
+    <div id="HomeExplain" class="home-item home-explain">
+        <h2 class="home-header-decorate" >Why I'm here</h2>
+
+        <p>I'm on a mission to create foolproof, easy-to-make ice cream recipes that anyone can whip up on a whim.
+           From classic favorites to creative twists, my goal is to develop recipes that are both accessible and delicious.
+           Store-bought ice cream can be great, but I want to craft recipes that deliver the same luxurious mouthfeel without the need for specialty equipment or complicated steps.
+           High quality commercial ice cream is expensive, but by making it at home, I can use top-tier ingredients while keeping the cost per serving surprisingly low.
+           Great ice cream should be easy, affordable, and absolutely irresistible.
+        </p>
+
+        <p>The perfect texture is silky smooth, creamy, with just the right amount of chew straight from the freezer.
+           I love exploring the nuances of different additives, substitutes, and unique mix-ins and determine how they interact to create something truly special.
+           In the future, I plan on characterizing individual ingredients so you can perform your own experiments and dial in recipes for your own preferences.
+           For now, explore my recipes with a "trust me" attitude that I have done the work for you.
+           I'm here to take the guesswork out of bougie home made ice cream.
+       </p>
+    </div>
+
+    <div id="HomeSuggestion" class="home-item home-suggestion">
+        <h2>Think you know better? Submit your ideas here!</h2>
+
+        <form id="SuggestionForm" onsubmit="return false;" class="home-suggestion-form">
+            <input type="text" id="SuggestionFirstName" class="suggestion-input" placeholder="First Name" pattern="@suggestion_firstNamePattern" required />
+            <input type="text" id="SuggestionLastName" class="suggestion-input" placeholder="Last Name" pattern="@suggestion_lastNamePattern" maxlength="@suggestion_lastNameMaximum" />
+            <input type="tel" id="SuggestionTelephone" class="suggestion-input hp-important" placeholder="Phone Number" />
+            <input type="email" id="SuggestionEmail" class="suggestion-input" placeholder="Email" maxlength="@suggestion_emailMaximum" />
+            <label>Sign up for emails? <input type="checkbox" id="SuggestionMarketing" class="suggestion-marketing-input" /></label>
+            <input type="text" id="SuggestionFlavor" class="suggestion-input" placeholder="Flavor" pattern="@suggestion_flavorPattern" required /></>
+            <div class="suggestion-textarea-container">
+                <textarea id="SuggestionDescription" class="suggestion-input suggestion-description-input" placeholder="Describe your flavor" maxlength="@suggestion_descriptionMaximum" required></textarea>
+                <div class="suggestion-input-counter-container">
+                    <span id="SuggestionDescriptionCount">0</span>
+                    <span id="SuggestionDescriptionMaximum">/ @suggestion_descriptionMaximum</span>
+                </div>
+            </div>
+
+             <input type="submit" id="SuggestionSubmit", value="Try me!" />
+
+             <div class="suggestion-toast-container">
+                 <div id="SuggestionToast" class="suggestion-toast">Thank you!</div>
+             </div>
+        </form>
+    </div>
+
+    <div id="HomeChangeBlog" class="home-item home-blog">
+        <h2 class="home-header-decorate" >Upcoming Projects</h2>
+        <div id="BlogBody" class="home-blog-body"></div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <script type="module" src="~/js/home/featured.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/home/trending.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/home/suggestion.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/home/blog.js" asp-append-version="true"></script>
+}

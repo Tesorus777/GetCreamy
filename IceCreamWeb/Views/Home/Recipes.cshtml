@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Recipes";
+}
+
+@section StyleSheets {
+    <link rel="stylesheet" href="~/css/recipeList/recipeList.css" />
+}
+
+<div id="RecipeBody" class="recipe-body"></div>
+
+<div class="recipe-load-more-container">
+    <button id="RecipeLoadMoreButton" class="recipe-load-more-button">Load More</button>
+</div>
+
+@section Scripts {
+    <script>
+        let recipes = @Html.Raw(ViewBag.Recipes);
+    </script>
+    <script type="module" src="~/js/recipeList.js" asp-append-version="true"></script>
+}

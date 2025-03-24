@@ -1,0 +1,378 @@
+﻿@{
+    ViewData["Title"] = "About";
+}
+
+@section StyleSheets {
+    <link rel="stylesheet" href="~/css/aboutMe/aboutMe.css" asp-append-version="true" />
+}
+
+<div id="AboutMeBody" class="about-me-body">
+
+    <div id="AboutMeHeader" class="about-me-item about-me-wide-item">
+
+        <h1 class="intro-name">Nicholas Tesoro</h1>
+        <h2 class="intro-title">Full Stack Enterprise Software Developer</h2>
+        <h3 class="intro-info">2025 - Los Angeles</h3>
+        <ul class="intro-links">
+            <li>Check me out on:</li>
+            <li><a href="https://www.linkedin.com/in/nicholastesoro/" target="_blank">LinkedIn</a></li>
+            <li><a href="https://github.com/Tesorus777" target="_blank">GitHub</a></li>
+        </ul>
+
+        <p class="intro-paragraph">
+            I am a full stack enterprise software developer specializing in end-to-end web application development.
+            I began my career at Jones Trading Institutional Services creating stored procedures in SSMS and APIs in ASP.NET Core as well as front end vanilla JavaScript, HTML, and CSS.
+            I used SQL Server Integration Services to manage data pipelining, organized current and depricated code, and utilized Azure DevOps to ensure application reliablity and development speed.
+            I channeled my natural ability to organize into custom applications for an internal web portal used by the trading, finance, compliance, and development departments.
+            The components I built were well documented for re-use and were designed for the current specified needs while leaving room for future additions.
+            I learned quickly on my own with online resources while maintaining strong communication with my mentors: our senior developer and project manager.
+            I thrive in dynamic environments and am eager to take on any challenge, leveraging new opportunities and training to quickly adapt and excel.
+        </p>
+
+        <p class="intro-paragraph">
+            In 2024, I took a year break to run a small ceramics business in Los Angeles.
+            I was responsible for client communications, materials aquisition, 3D printing of custom plaster mold making tools, end-to-end sample and mass manufacturing, and building an extensive spreadsheet capable of tracking materials, cost, and manufacturing progress.
+            I managed the manufacturing and operations and successfully delivered 300 pieces to a local coffee chain.
+            Future plans fell through due to personal reasons, but I used the year to develop a new hobby and deepen my communication skills while staying focused on the technology side of the business.
+        </p>
+
+        <p class="intro-paragraph">
+            This site is the culmination of my current skills and is a demonstration of what I am able to develop.
+            I learned the majority of this architecture during my time at Jones Trading, but included many upgrades as I discovered new tools and assessed what this website's needs were.
+            This site utilizes multiple custom relational databases, stored procedures, a data transport layer and API built in ASP.NET Core, and a fully custom MVC front end written with vanilla JavaScript modules, HTML, and CSS.
+            Most development time was dedicated to building custom JavaScript modules that allow for impressive re-usability of code considering the scope of this website.
+            This site is now launched with Azure hosting the web project, API, and database while Cloudflare manages the domain and caching.
+            Building this site allowed me to explore simple clever solutions instead of rushing something half baked out the door.
+            I have considered everything from bot invasion to meddling users abusing different components to filling databases with garbage data to following GDPR regulations.
+            I plan to continue development and check off my upcoming projects and beyond now that I have a solid foundation to build from.
+        </p>
+
+    </div>
+
+    <div id="AboutMeExperience" class="about-me-item about-me-wide-item">
+
+        <h2 class="about-me-header">Relevant Experience</h2>
+
+        <div id="Job3" class="job-experience">
+
+            <div class="job-information">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="job-experience-collapse closed">
+                    <path d="M3.204 5h9.592L8 10.481zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659" />
+                </svg>
+                <h2 class="job-title">Full Stack Developer</h2>
+                <h3 class="job-company">Creamy</h3>
+                <h3 class="job-dates">January 2025 - Ongoing</h3>
+            </div>
+
+            <div class="job-description-container closed">
+                <div class="job-description">
+
+                    <p class="job-company-description">Portfolio website that stores my personally developed ice cream recipes.</p>
+
+                    <div class="job-project-description">
+                        <div>
+                            <h4 class="job-project-title">Relational Databases</h4>
+                            <ul class="job-project">
+                                <li>
+                                    Created databases for managing recipe, user, and site information.
+                                    The recipe database is designed to hold recipes, steps, ingredients, notes, and photos.
+                                    The user database is designed to store user information, suggestions, and local storage (e.g. cookie) information for GDPR regulations.
+                                </li>
+                                <li>Designed views and stored procedures where appropriate to build out API functionality.</li>
+                                <li>Optimized data flow for speed and reliability while considering user input.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">ASP.NET Core Data Access Transport Layer</h4>
+                            <ul class="job-project">
+                                <li>Architected data access structure with the capablility of accessing SQL Server databases in a structured manner.</li>
+                                <li>Built data access classes for generic API executions and strict database access methods.</li>
+                                <li>Designed hierarchical data models that preserve database schema while preventing front end visiblity of sensitive data.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">API and MVC Front End</h4>
+                            <ul class="job-project">
+                                <li>Utilized Microsoft MVC and API controller tools to build end points for data aquisition.</li>
+                                <li>Added data access to front end for optional server-side rendering techniques.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">JavaScript Startup Class</h4>
+                            <ul class="job-project">
+                                <li>
+                                    Designed API Fetcher class to perform API fetches in a structured, reusable manner.
+                                    Created extra method to catch exceptions when error handling is fully implemented.
+                                </li>
+                                <li>
+                                    Designed Storage class to get and set Cookies, Session tokens, and Local Storage items.
+                                    Cookies are automatically stored into an object accessible by JavaScript with methods to add and remove.
+                                    This class is utilized for the home page's trending card view count statistics.
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">Image Management JavaScript Classes</h4>
+                            <ul class="job-project">
+                                <li>Designed image importer that automatically assessed file types and sets object properties to easily add images to any page.</li>
+                                <li>
+                                    Built custom image carousel with viewport and pagination functionality.
+                                    Images can be infinitely scrolled both manually and automatically with an optional pause feature for automatic scrolling.
+                                    Autoscrolling restarts after manual input and a configurable timer.
+                                </li>
+                                <li>
+                                    Built custom menu list class with viewport and selection container.
+                                    This class is utilized for the home page's trending card and allows for hovering over a list of items and displaying the accompanying image within a seperate container.
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">Home Page</h4>
+                            <ul class="job-project">
+                                <li>Featured and Blog cards use API calls to generate static display data.</li>
+                                <li>Trending card utilizes autoscrolling code to dynamically show images from trending recipes which stops as a user interacts with the card.</li>
+                                <li>Suggestion card utilizes a multitude of user behavior checks to validate the suggestion form and minimize garbage data collection and malicious attack vectors from the front end.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">Recipe List Page</h4>
+                            <ul class="job-project">
+                                <li>Utilizes the image importer class to display the first available image for a given recipe.</li>
+                                <li>
+                                    Animates cards upon load.
+                                    A button loads more available recipes while preserving the loading animation.
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">Recipe Page</h4>
+                            <ul class="job-project">
+                                <li>Utilizes the image carousel class to display all available recipe images alongside static page data.</li>
+                                <li>
+                                    Created an event listener for when the StorageClass fires a loaded event to track recipe page views.
+                                    This listener requires a valid UserId GUID cookie and for the page to be navigated to.
+                                    Any access to the page via refresh for back-forward browser behavior will not record a view.
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">HTML and CSS</h4>
+                            <ul class="job-project">
+                                <li>CSHTML files are utilized to take advantage of Microsoft tools and MVC hierarchical structure as well as dynamic injection of JavaScript, CSS styles, and other data.</li>
+                                <li>
+                                    Modern CSS is used to prevent legacy bloat and encourage users to use a modern browser while preserving full functionality in Google Chrome, Safari, and Firefox.
+                                    These tools enable less code to be more clever and functional for the purpose of beautification.
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">Hosting</h4>
+                            <ul class="job-project">
+                                <li>Migrated databases to Azure SQL Server database. Modified SQL to be compatible with Azure hosting.</li>
+                                <li>Upgraded API and Web projects to .net 8.0 for long term support.</li>
+                                <li>Managed API and Web project database permissions and documented a workflow for future reference.</li>
+                                <li>Generated SSL certificates with Cloudflare and translated them between formats for use in Azure to utilize a custom domain.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div id="Job2" class="job-experience">
+
+            <div class="job-information">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="job-experience-collapse closed">
+                    <path d="M3.204 5h9.592L8 10.481zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659" />
+                </svg>
+                <h2 class="job-title">Operations and Manufacturing Lead</h2>
+                <h3 class="job-company">Scientific Method Ceramics</h3>
+                <h3 class="job-dates">January 2024 - December 2024</h3>
+            </div>
+
+            <div class="job-description-container closed">
+                <div class="job-description">
+
+                    <p class="job-company-description">LA based custom ceramics design house and manufacturer.</p>
+
+                    <div class="job-project-description">
+                        <div>
+                            <ul class="job-project">
+                                <li>Developed and implemented a Notion-based tracking system for client projects, meetings, and deliverables, streamlining communication and ensuring transparency.</li>
+                                <li>Designed and maintained an advanced production tracking spreadsheet to monitor client projects, materials, quantities, and pricing, ensuring accuracy and efficiency in operations.</li>
+                                <li>Managed and coordinated artist responsibilities and deliverables, ensuring projects were completed on time and in alignment with client specifications.</li>
+                                <li>Oversaw client relationships and expectations, managing communications through text, email, and in-person meetings, ensuring clarity and satisfaction throughout the project life-cycle.</li>
+                                <li>Managed the end-to-end manufacturing process of a 300-piece client project, from initial design to final production, ensuring high-quality standards, timely delivery, and cost-efficiency through optimized production workflows and strict quality control.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div id="Job1" class="job-experience">
+
+            <div class="job-information">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="job-experience-collapse closed">
+                    <path d="M3.204 5h9.592L8 10.481zm-.753.659 4.796 5.48a1 1 0 0 0 1.506 0l4.796-5.48c.566-.647.106-1.659-.753-1.659H3.204a1 1 0 0 0-.753 1.659" />
+                </svg>
+                <h2 class="job-title">Enterprise Software Developer</h2>
+                <h3 class="job-company">Jones Trading Institutional Services</h3>
+                <h3 class="job-dates">October 2020 - October 2023</h3>
+            </div>
+            
+            <div class="job-description-container closed">
+                <div class="job-description">
+
+                    <p class="job-company-description">LA based custom ceramics design house and manufacturer.</p>
+
+                    <div class="job-project-description">
+                        <div>
+                            <h4 class="job-project-title">Order Management System Migration</h4>
+                            <ul class="job-project">
+                                <li>Played instrumental role changing OMS providers that feeds master accounting databases for allocations, commission, trade details, and client reports.</li>
+                                <li>Detailed crucial processes which are impacted by legacy fields no longer provided and enacted solutions to rectify any discrepancies in data.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">Account Rectification Application</h4>
+                            <ul class="job-project">
+                                <li>Replaced aging application with a vital maintenance system for broken account data that links clients to trader commission.</li>
+                                <li>Combined multiple unique data imports into one system to improve operations department workflow.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">Error Acknowledgement Application</h4>
+                            <ul class="job-project">
+                                <li>Developed a bespoke platform for the traders, compliance department, and other management staff to audit business transaction errors.</li>
+                                <li>Reduced internal audit time by implementing restful APIs and custom front end interface with compliance-mandated user-input tracking.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">SQL Server Reporting Services Migration</h4>
+                            <ul class="job-project">
+                                <li>Reduced SQL Server licensing costs by 90% per year by implementing an in-house replacement for data-driven subscriptions across eleven fewer servers.</li>
+                                <li>Saved weeks manually migrating financial reports via automation and created SQL Server jobs to manage essential client reports with automatic delivery via email and SFTP.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">API Consolidation</h4>
+                            <ul class="job-project">
+                                <li>
+                                    Reduced code compile time by removing redundant, depricated code.
+                                    Organized startup processes into neat code blocks for future maintainability.
+                                </li>
+                                <li>
+                                    Updated stored procedures and APIs on both server and front end points to use new development standards for every crucial project.
+                                    Manually sifted through every single front end API fetch request to utilize new controller end points and ran quality assurance to maintain functionality.
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Custom Dropdown JavaScript Class</h4>
+                            <ul class="job-project">
+                                <li>
+                                    Created a JavaScript module that implements a custom dropdown menu input reducing development time on applications with both single and multi-select dropdown requirements.
+                                    Included autofill and keyboard entry capability through a filtered list of options that updates while the user types.
+                                </li>
+                                <li>
+                                    Thoroughly documented functionality and implementation requirements with examples to simplify future utilization.
+                                    Included a quick-start guide for maintainers to understand how to quickly utilize this class while explaining how the code functions.
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="job-project-title">Project Management in Azure DevOps</h4>
+                            <ul class="job-project">
+                                <li>Translated high-level discussions and ambiguous requirements into clear, prioritized action items to improve team efficiency and facilitate knowledge transfer.</li>
+                                <li>Collaborated with stakeholders to gather feedback, define feature requests, and implement functionality enhancements aligned with product roadmaps.</li>
+                                <li>Maintained comprehensive project and support documentation within the internal Wiki to streamline task handoffs, reduce development overhead, and ensure continuity.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="AboutMeTechnicalSkills" class="about-me-item">
+
+        <h2 class="about-me-header">Technical Skills</h2>
+
+        <div class="technical-skills-item">
+            <h4>Software Languages</h4>
+            <ul>
+                <li>T-SQL</li>
+                <li>C#</li>
+                <li>JavaScript</li>
+                <li>HTML + CSS</li>
+                <li>Python</li>
+            </ul>
+        </div>
+
+        <div class="technical-skills-item">
+            <h4>Development Apps</h4>
+            <ul>
+                <li>Visual Studio</li>
+                <li>SQL Server Management Studio (SSMS)</li>
+            </ul>
+        </div>
+
+        <div class="technical-skills-item">
+            <h4>Productivity Apps</h4>
+            <ul>
+                <li>Azure DevOps</li>
+                <li>Notion</li>
+            </ul>
+        </div>
+
+        <div class="technical-skills-item">
+            <h4>Extra Skills</h4>
+            <ul>
+                <li>SQL Server Integration Services (SSIS)</li>
+                <li>SQL Server Reporting Services (SSRS)</li>
+                <li>GitHub</li>
+                <li>SQL Server Jobs</li>
+                <li>OpenSCAD + Prusa Slicer</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="AboutMeExtraInformation" class="about-me-item">
+
+        <h2 class="about-me-header">Extra Information</h2>
+
+        <div class="extra-information-item">
+            <h4>Highest Education</h4>
+            <h5>Graduated University of California, Davis</h5>
+            <h5>BSE Electrical Engineering</h5>
+        </div>
+
+        <div class="extra-information-item">
+            <h4>Personal Interests</h4>
+            <ul>
+                <li>Electric and Vintage Cars</li>
+                <li>3D Printing</li>
+                <li>Distance Running</li>
+                <li>Rock Climbing</li>
+                <li>Vintage Bikes</li>
+                <li>Rhodesian Ridgebacks</li>
+                <li>Homemade Ice Cream &#128521;</li>
+                <li>SCUBA Diving</li>
+            </ul>
+        </div>
+        
+    </div>
+
+</div>
+
+@section Scripts {
+    <script type="module" src="~/js/aboutMe/aboutMe.js" asp-append-version="true"></script>
+}

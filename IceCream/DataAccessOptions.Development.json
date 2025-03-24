@@ -1,0 +1,7 @@
+{
+  "ConnectionStrings": {
+    "Recipe": "Data Source=localhost;Initial Catalog=Recipe;Integrated Security=true;TrustServerCertificate=True",
+    "User": "Data Source=localhost;Initial Catalog=User;Integrated Security=true;TrustServerCertificate=True",
+    "Site": "Data Source=localhost;Initial Catalog=Site;Integrated Security=true;TrustServerCertificate=True;"
+  }
+}

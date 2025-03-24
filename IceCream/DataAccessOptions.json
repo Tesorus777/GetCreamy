@@ -1,0 +1,121 @@
+{
+  "ConnectionStrings": {
+    "Recipe": "Server=tcp:getcreamy.database.windows.net, 1433;Initial Catalog=Creamy;Encrypt=True; TrustServerCertificate=False; Connection Timeout=30; Authentication=Active Directory Default",
+    "User": "Server=tcp:getcreamy.database.windows.net, 1433;Initial Catalog=Creamy;Encrypt=True; TrustServerCertificate=False; Connection Timeout=30; Authentication=Active Directory Default",
+    "Site": "Server=tcp:getcreamy.database.windows.net, 1433;Initial Catalog=Creamy;Encrypt=True; TrustServerCertificate=False; Connection Timeout=30; Authentication=Active Directory Default"
+  },
+  "RecipeDatabase": {
+    "ConnectionString": "Recipe",
+    "Options": {
+      "Ingredient": {
+        "Select": "Ingredient_Select",
+        "Insert": "",
+        "Update": "",
+        "Delete": "",
+        "Other": {}
+      },
+      "Recipe": {
+        "Select": "Recipe_Select",
+        "Insert": "",
+        "Update": "",
+        "Delete": "",
+        "Other": {
+          "SelectOne": "Recipe_SelectOne",
+          "SelectRandom": "Recipe_SelectRandom",
+          "SelectOneRandom": "Recipe_SelectOneRandom",
+          "SelectOneBundle": "Recipe_SelectOneBundle",
+          "Trending": "UserView_TrendingRecipes"
+        }
+      },
+      "RecipeNote": {
+        "Select": "Notes_Select",
+        "Insert": "",
+        "Update": "",
+        "Delete": "",
+        "Other": {}
+      },
+      "RecipePhotos": {
+        "Select": "Steps_Select",
+        "Insert": "",
+        "Update": "",
+        "Delete": "",
+        "Other": {
+          "SelectOne": "RecipePhotos_SelectOne",
+          "SelectFirsts": "RecipePhotos_SelectFirsts"
+        }
+      },
+      "Step": {
+        "Select": "Steps_Select",
+        "Insert": "",
+        "Update": "",
+        "Delete": "",
+        "Other": {}
+      }
+    }
+  },
+  "UserDatabase": {
+    "ConnectionString": "User",
+    "Options": {
+      "Storage": {
+        "Select": "Storage_Select",
+        "Insert": "",
+        "Update": "",
+        "Delete": "",
+        "Other": {
+          "SelectCookies": "Storage_SelectCookies",
+          "SelectSessions": "Storage_SelectSessions",
+          "SelectLocals": "Storage_SelectLocals"
+        }
+      },
+      "User": {
+        "Select": "",
+        "Insert": "User_Insert",
+        "Update": "",
+        "Delete": "",
+        "Other": {}
+      },
+      "UserInfo": {
+        "Select": "",
+        "Insert": "UserInfo_Insert",
+        "Update": "",
+        "Delete": "",
+        "Other": {}
+      },
+      "UserSuggestion": {
+        "Select": "",
+        "Insert": "UserSuggestion_Insert",
+        "Update": "",
+        "Delete": "",
+        "Other": {
+          "NewSuggestion": "UserSuggestion_SubmitNew"
+        }
+      },
+      "UserEmail": {
+        "Select": "",
+        "Insert": "",
+        "Update": "",
+        "Delete": "",
+        "Other": {}
+      },
+      "UserView": {
+        "Select": "",
+        "Insert": "UserView_Insert",
+        "Update": "",
+        "Delete": "",
+        "Other": {}
+      }
+    }
+  },
+  "SiteDatabase": {
+    "ConnectionString": "Site",
+    "Options": {
+      "UpcomingProject": {
+        "Select": "UpcomingProject_SelectIncomplete",
+        "Insert": "",
+        "Update": "",
+        "Delete": "",
+        "Other": {}
+      }
+    }
+  }
+}

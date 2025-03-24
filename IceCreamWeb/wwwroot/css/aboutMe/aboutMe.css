@@ -1,0 +1,230 @@
+﻿div.about-me-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem 3rem;
+    padding: 0 10%;
+    margin: 2rem 0;
+}
+
+div.about-me-item {
+    display: flex;
+    flex-flow: column nowrap;
+    height: fit-content;
+    min-width: fit-content;
+    padding: 1.5rem 0.75rem;
+    background-color: var(--accent-one-medium-bright);
+    border-width: 0.15em;
+    border-color: var(--accent-one-medium-light);
+    border-style: solid;
+    border-radius: 2em;
+    box-shadow: 0 0.15rem 0.65rem var(--shadow-color);
+}
+
+div.about-me-wide-item {
+    grid-column: 1 / 3;
+}
+
+h2.about-me-header {
+    margin-left: 0.5em;
+    text-decoration: underline var(--accent-two-medium-light) solid;
+    text-underline-offset: 0.5rem;
+}
+
+/* #region Header */
+h1.intro-name {
+    margin-left: 0.5em;
+    text-decoration: underline var(--accent-two-medium-light) solid;
+    text-underline-offset: 0.5rem;
+}
+
+h2.intro-title, h3.intro-info {
+    margin: 0 0 0 1rem;
+}
+
+ul.intro-links {
+    list-style-type: none;
+    padding: 0;
+    margin-left: 1rem;
+}
+
+    ul.intro-links li:first-child {
+        margin-bottom: 0.25rem;
+    }
+
+p.intro-paragraph {
+    margin: 0 5rem 1rem 5rem;
+    text-indent: 2em;
+    text-align: justify;
+    transition: margin ease 0.75s;
+}
+/* #endregion Header */
+
+/* #region Experience */
+
+div.job-experience {
+    display: grid;
+    grid-auto-rows: min-content;
+}
+
+div.job-information {
+    display: grid;
+    grid-template-columns: min-content auto;
+    grid-auto-rows: min-content;
+}
+
+svg.job-experience-collapse {
+    grid-column: 1;
+    grid-row: 1;
+    height: 2.4rem;
+    transition: transform cubic-bezier(0.18,1.2,0.86,1) 0.5s;
+    cursor: pointer;
+}
+
+    svg.job-experience-collapse.closed {
+        transform: rotate(-90deg);
+    }
+
+h2.job-title {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+}
+
+h3.job-company {
+    grid-column: 2;
+    margin: 0.25rem 0;
+}
+
+h3.job-dates {
+    grid-column: 2;
+    margin: 0;
+}
+
+
+div.job-description-container {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows ease-out 0.5s;
+}
+
+    div.job-description-container.closed {
+        grid-template-rows: 0fr;
+    }
+
+div.job-description {
+    display: grid;
+    grid-template-rows: min-content min-content;
+    overflow: hidden;
+}
+
+p.job-company-description {
+    margin: 1rem 2rem;
+}
+
+div.job-project-description {
+    margin: 0 0 0 2em;
+}
+
+    div.job-project-description div:not(:last-child)::after {
+        display: block;
+        content: "";
+        border-bottom: 0.15em solid var(--accent-two-medium-light);
+        margin: 1rem 2rem 0 2rem;
+    }
+
+h4.job-project-title {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+    div.job-project-description div:first-child h4.job-project-title {
+        margin-top: 0rem;
+    }
+
+ul.job-project {
+    list-style-type: circle;
+    padding-left: 2em;
+    margin: 0;
+}
+
+
+div.about-me-item div.job-experience:not(:last-child)::after {
+    display: block;
+    content: "";
+    border-bottom: 0.25em solid var(--accent-two-medium-light);
+    margin: 1rem;
+}
+/* #endregion Experience */
+
+/* #region Technical Skills */
+div.technical-skills-item:not(:last-child)::after {
+    display: block;
+    content: "";
+    border-bottom: 0.15em solid var(--accent-two-medium-light);
+    margin: 1rem 2rem 0.5rem 2rem;
+}
+
+div.technical-skills-item h4 {
+    margin: 0 0 0 2em;
+}
+
+div.technical-skills-item ul {
+    list-style-type: circle;
+    padding-left: 2em;
+    margin: 0 0 0 2em;
+}
+/* #endregion Technical Skills */
+
+/* #region Extra Information */
+div.extra-information-item:not(:last-child)::after {
+    display: block;
+    content: "";
+    border-bottom: 0.15em solid var(--accent-two-medium-light);
+    margin: 1rem 2rem 0.5rem 2rem;
+}
+
+div.extra-information-item h4 {
+    margin: 0 0 0 2rem;
+}
+
+div.extra-information-item h5 {
+    font-weight: normal;
+    margin: 0.15rem 0 0.15rem 3rem;
+}
+
+div.extra-information-item ul {
+    list-style-type: circle;
+    padding-left: 2em;
+    margin: 0 0 0 2em;
+}
+
+/* #endregion Extra Information */
+
+/* #region Media Queries */
+
+/* Tablet */
+@media (max-width: 1000px) {
+    p.intro-paragraph {
+        margin: 0 2rem 1rem 2rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+    div.about-me-body {
+        grid-template-columns: 1fr;
+        gap: 2rem 1.5rem;
+        padding: 0 5%;
+    }
+
+    div.about-me-item {
+        grid-column: 1;
+    }
+
+    p.intro-paragraph {
+        margin: 0 1.5rem 1rem 1.5rem;
+        text-align: left;
+    }
+}
+
+/* #endregion Media Queries */
