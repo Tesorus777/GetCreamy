@@ -79,6 +79,11 @@
 
 
 @section Scripts {
+    <script>
+        const featured = @Html.Raw(ViewBag.Featured);
+        const trending = @Html.Raw(ViewBag.Trending);
+        const blog = @Html.Raw(ViewBag.Blog);
+    </script>
     <script type="module" src="~/js/home/featured.js" asp-append-version="true"></script>
     <script type="module" src="~/js/home/trending.js" asp-append-version="true"></script>
     <script type="module" src="~/js/home/suggestion.js" asp-append-version="true"></script>

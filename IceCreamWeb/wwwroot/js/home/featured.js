@@ -27,7 +27,7 @@ const featuredName = querySelector("#FeaturedName");
 const featuredDescription = querySelector("#FeaturedDescription");
 
 // Recipe
-const featuredRecipe = await API.GetSingle("IceCream/Recipe/Featured");
+const featuredRecipe = featured[0]; // from ViewBag
 
 // #endregion Variables
 

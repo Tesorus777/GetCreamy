@@ -100,8 +100,9 @@ export class Carousel extends Importer {
         this._timer = autoIntervalSeconds * 1000;  // 3 seconds per image default
         this._timerPause = pauseIntervalSeconds * 1000; // 15 seconds pause until restart autoscroll default
         // Mobile Swiping
-        this._touchstartX = 0
-        this._touchendX = 0
+        this._touchstartX = 0; // unit = px
+        this._touchendX = 0; // unit = px
+        this._scrollThreshold = 50; // unit = px
         // #endregion Set Internally
 
         this.AddStyles(); // Only adds if styles missing
@@ -279,10 +280,11 @@ export class Carousel extends Importer {
     // #region Mobile Swipe Methods
 
     CheckDirection(event) {
-        if (this._touchendX < this._touchstartX) {
+        let scrollDistance = Math.abs(this._touchendX - this._touchstartX);
+        if ((this._touchendX < this._touchstartX) && (scrollDistance > this._scrollThreshold)) {
             this.NextItem(event);
         }
-        if (this._touchendX > this._touchstartX) {
+        if ((this._touchendX > this._touchstartX) && (scrollDistance > this._scrollThreshold)) {
             this.PreviousItem(event);
         }
     }

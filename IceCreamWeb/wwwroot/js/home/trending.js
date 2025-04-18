@@ -23,7 +23,7 @@ let autoScrollTimer = 4 * 1000; // 5 seconds
 // #endregion Variables
 
 async function LoadTrending() {
-    let trendingRecipes = await API.Get("IceCream/Recipe/Trending");
+    let trendingRecipes = trending;
     trendingRecipes.forEach(r => {
         // Build Trending Recipe Menu text object
         r.Item = BuildMenuObject(r);

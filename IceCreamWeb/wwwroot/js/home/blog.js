@@ -9,7 +9,7 @@
 const blogBody = querySelector(`#BlogBody`);
 
 // Blog data
-const blogData = await API.Get("Site/IncompleteProjects");
+const blogData = blog;
 
 // #endregion Variables
 
