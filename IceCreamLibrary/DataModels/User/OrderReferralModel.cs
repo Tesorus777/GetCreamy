@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace IceCream.DataLibrary.DataModels.User
 {
-    public class UserModel : BaseModel
+    public class OrderReferralModel : BaseModel
     {
-        public Guid UserId { get; set; }
+        public string Text { get; set; }
+        public decimal DiscountPercent { get; set; }
     }
 }

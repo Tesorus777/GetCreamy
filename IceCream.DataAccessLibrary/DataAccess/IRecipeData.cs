@@ -27,5 +27,10 @@ namespace IceCream.DataAccessLibrary.DataAccess
         List<StepModel> StepInsert(StepModel input);
         List<StepModel> StepSelect(RecipeModel input);
         List<StepModel> StepUpdate(StepModel input);
+        List<InventoryModel> InventorySelectCurrentStock();
+        List<InventoryModel> InventorySelectAllStock();
+        List<InventoryModel> InventorySelectOneCurrentStock(string recipeName);
+        List<InventoryModel> InventorySelectOrderItemsBulk(List<CartModel> cartContent);
+        List<InventoryModel> InventoryDeleteOrderItemsBulk(List<CartModel> cartContent);
     }
 }

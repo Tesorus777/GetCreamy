@@ -14,6 +14,18 @@
         "Delete": "",
         "Other": {}
       },
+      "Inventory": {
+        "Select": "Inventory_CurrentStock",
+        "Insert": "",
+        "Update": "",
+        "Delete": "",
+        "Other": {
+          "SelectAll": "Inventory_Select",
+          "SelectOne": "Inventory_CurrentStockOne",
+          "SelectOrder": "Inventory_OrderSelectBulk",
+          "SelectOrderAndDelete": "Inventory_OrderDeleteBulk"
+        }
+      },
       "Recipe": {
         "Select": "Recipe_Select",
         "Insert": "",
@@ -56,6 +68,25 @@
   "UserDatabase": {
     "ConnectionString": "User",
     "Options": {
+      "Order": {
+        "Select": "",
+        "Insert": "Order_Insert",
+        "Update": "Order_UpdateStatus",
+        "Delete": "",
+        "Other": {
+          "VerifyReferral": "Order_VerifyReferral",
+          "VerifyZipcode": "Order_VerifyZipcode"
+        }
+      },
+      "OrderContent": {
+        "Select": "",
+        "Insert": "OrderContent_InsertBulk",
+        "Update": "",
+        "Delete": "",
+        "Other": {
+          "InsertOne": "OrderContent_InsertOne"
+        }
+      },
       "Storage": {
         "Select": "Storage_Select",
         "Insert": "",

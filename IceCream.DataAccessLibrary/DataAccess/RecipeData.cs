@@ -1,10 +1,12 @@
-﻿using IceCream.DataAccessLibrary.DataOptions;
+﻿using Dapper;
+using IceCream.DataAccessLibrary.DataOptions;
 using IceCream.DataAccessLibrary.DataOptions.Recipe;
 using IceCream.DataAccessLibrary.Internal;
 using IceCream.DataAccessLibrary.Internal.Bundlers;
 using IceCream.DataLibrary.DataModels;
 using IceCream.DataLibrary.DataModels.Recipe;
 using IceCream.DataLibrary.DataModels.Recipe.Bundle;
+using IceCream.DataLibrary.Internal;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Xml.Linq;
@@ -255,6 +257,67 @@ namespace IceCream.DataAccessLibrary.DataAccess
         {
             List<RecipeNotesModel> output = new();
 
+            return output;
+        }
+
+        #endregion
+
+        #region Inventory
+
+        public List<InventoryModel> InventorySelectCurrentStock()
+        {
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { },
+                Command: _opt.Options.Inventory.Select
+            );
+            return output;
+        }
+
+        public List<InventoryModel> InventorySelectAllStock()
+        {
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { },
+                Command: _opt.Options.Inventory.Other["SelectAll"]
+            );
+            return output;
+        }
+
+        public List<InventoryModel> InventorySelectOneCurrentStock(string recipeName)
+        {
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { RecipeName = recipeName },
+                Command: _opt.Options.Inventory.Other["SelectOne"]
+            );
+            return output;
+        }
+
+        public List<InventoryModel> InventorySelectOrderItemsBulk(List<CartModel> cartContent)
+        {
+            var cartContentDataTable = cartContent.ToDataTable<CartModel>("CartContentType");
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { CartContent = cartContentDataTable.AsTableValuedParameter("CartContentType") },
+                Command: _opt.Options.Inventory.Other["SelectOrder"]
+            );
+            return output;
+        }
+
+        public List<InventoryModel> InventoryDeleteOrderItemsBulk(List<CartModel> cartContent)
+        {
+            var cartContentDataTable = cartContent.ToDataTable<CartModel>("CartContentType");
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { CartContent = cartContentDataTable.AsTableValuedParameter("CartContentType") },
+                Command: _opt.Options.Inventory.Other["SelectOrderAndDelete"]
+            );
             return output;
         }
 

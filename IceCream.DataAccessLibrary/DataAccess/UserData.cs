@@ -1,7 +1,10 @@
-﻿using IceCream.DataAccessLibrary.DataOptions;
+﻿using Dapper;
+using IceCream.DataAccessLibrary.DataOptions;
 using IceCream.DataAccessLibrary.Internal;
 using IceCream.DataLibrary.DataModels;
+using IceCream.DataLibrary.DataModels.Recipe;
 using IceCream.DataLibrary.DataModels.User;
+using IceCream.DataLibrary.Internal;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -21,6 +24,86 @@ namespace IceCream.DataAccessLibrary.DataAccess
             _sqlCaller = sqlCaller;
             _opt = opt.Value;
         }
+
+        #region Order
+
+        public OrderModel OrderInsert(OrderModel order)
+        {
+            // This is an insert despite having a return value because the Order Id is used later to insert Order Content
+            OrderModel output = new();
+            output = _sqlCaller.ExecuteSelect<OrderModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: order,
+                Command: _opt.Options.Order.Insert
+            ).First();
+            return output;
+        }
+
+        public void OrderUpdate(OrderModel order)
+        {
+            _sqlCaller.Execute<dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: order,
+                Command: _opt.Options.Order.Update
+            );
+        }
+
+        public List<DeliveryZipcodeModel> OrderVerifyZipcode(string zipcode)
+        {
+            List<DeliveryZipcodeModel> output = new();
+            output = _sqlCaller.ExecuteSelect<DeliveryZipcodeModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { Zipcode = zipcode },
+                Command: _opt.Options.Order.Other["VerifyZipcode"]
+            );
+            return output;
+        }
+
+        public List<OrderReferralModel> OrderVerifyReferral(string referral)
+        {
+            List<OrderReferralModel> output = new();
+            output = _sqlCaller.ExecuteSelect<OrderReferralModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { Text = referral },
+                Command: _opt.Options.Order.Other["VerifyReferral"]
+            );
+            return output;
+        }
+
+        #endregion
+
+        #region Order Content
+
+        public List<InventoryModel> OrderContentInsertBulk(long orderId, List<InventoryModel> inventoryContent)
+        {
+            List<InventoryModel> output = new();
+            var inventoryContentDataTable = inventoryContent.ToDataTable<InventoryModel>("InventoryContentType");
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { OrderId = orderId, InventoryContent = inventoryContentDataTable.AsTableValuedParameter("InventoryContentType") },
+                Command: _opt.Options.OrderContent.Insert
+            );
+            return output;
+        }
+
+        public List<InventoryModel> OrderContentInsert(long orderId, InventoryModel inventoryContent)
+        {
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new {
+                    Id = inventoryContent.Id,
+                    OrderId = orderId,
+                    RecipeName = inventoryContent.RecipeName,
+                    PintorQuart = inventoryContent.PintorQuart,
+                    Price = inventoryContent.Price
+                },
+                Command: _opt.Options.OrderContent.Other["InsertOne"]
+            );
+            return output;
+        }
+
+        #endregion
 
         #region Storage
 

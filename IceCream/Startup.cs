@@ -35,7 +35,7 @@ namespace IceCreamAPI
             }).ConfigureApiBehaviorOptions(options =>
             {
                 options.SuppressMapClientErrors = true;
-            });
+            }).AddNewtonsoftJson();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddCors(p => p.AddPolicy("corsapp", builder =>

@@ -17,6 +17,7 @@ namespace IceCreamAPI.Controllers
         }
 
         #region Recipe
+
         [HttpGet]
         [Route("Recipe")]
         public List<RecipeModel> GetRecipes()
@@ -51,9 +52,11 @@ namespace IceCreamAPI.Controllers
         {
             return _recipe.RecipeSelectTrending();
         }
+
         #endregion
 
         #region Recipe Photo
+
         [HttpGet]
         [Route("Photos/{name}")]
         public List<RecipePhotoModel> GetOneRecipePhotos(string name= "vanilla")
@@ -71,6 +74,24 @@ namespace IceCreamAPI.Controllers
         #endregion
 
         #region Ingredients
+
+        #endregion
+
+        #region Inventory
+
+        [HttpGet]
+        [Route("Inventory")]
+        public List<InventoryModel> GetCurrentInventory()
+        {
+            return _recipe.InventorySelectCurrentStock();
+        }
+
+        [HttpGet]
+        [Route("Inventory/{recipeName}")]
+        public List<InventoryModel> GetInventoryOne(string recipeName)
+        {
+            return _recipe.InventorySelectOneCurrentStock(recipeName);
+        }
 
         #endregion
 

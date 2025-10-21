@@ -73,7 +73,7 @@ namespace IceCream.DataAccessLibrary.Internal
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to ExecuteSelect");
+                _logger.LogError(ex, "Failed to ExecuteDoubleSelect");
             }
             return output;
         }
@@ -97,7 +97,7 @@ namespace IceCream.DataAccessLibrary.Internal
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to ExecuteSelect");
+                _logger.LogError(ex, "Failed to ExecuteSelectBundle");
                 return (T)output.Bundled;
             }
 
@@ -116,7 +116,7 @@ namespace IceCream.DataAccessLibrary.Internal
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to ExecuteSelect");
+                _logger.LogError(ex, "Failed to Execute");
             }
         }
 

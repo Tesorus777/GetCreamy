@@ -9,6 +9,7 @@ namespace IceCream.DataAccessLibrary.DataOptions.Recipe
     public class RecipeOptions
     {
         public GenericOptions Ingredient { get; set; }
+        public GenericOptions Inventory { get; set; }
         public GenericOptions Recipe { get; set; }
         public GenericOptions RecipeNote { get; set; }
         public GenericOptions RecipePhotos { get; set; }

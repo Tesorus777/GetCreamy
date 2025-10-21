@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace IceCream.DataLibrary.DataModels.User
 {
-    public class UserModel : BaseModel
+    public class DeliveryZipcodeModel : BaseModel
     {
-        public Guid UserId { get; set; }
+        public string Zipcode { get; set; }
+        public string Name { get; set; }
     }
 }
