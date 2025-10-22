@@ -1,5 +1,6 @@
 ﻿// #region Imports
 import { APIFetcher, StorageClass } from "./startupFactory.js";
+import { ShoppingCart } from "./cart.js";
 // #endregion
 
 // #region Variables
@@ -16,6 +17,7 @@ const querySelectorAll = (selector) => Array.from(document.querySelectorAll(sele
 
 const API = new APIFetcher(baseUrl);
 const UserStorage = new StorageClass(baseUrl);
+const Cart = new ShoppingCart(UserStorage.Cookie.UserId);
 
 // #region Set Global Scope
 
@@ -23,6 +25,7 @@ window.querySelector = querySelector;
 window.querySelectorAll = querySelectorAll;
 window.API = API;
 window.UserStorage = UserStorage;
+window.Cart = Cart;
 
 // #endregion
 

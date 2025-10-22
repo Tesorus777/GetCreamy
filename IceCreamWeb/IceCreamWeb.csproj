@@ -19,6 +19,9 @@
     <Folder Include="wwwroot\lib\images\recipe\HolidaySpirit\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.21" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Update="DataAccessOptions.Development.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

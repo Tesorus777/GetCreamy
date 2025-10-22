@@ -2,6 +2,16 @@
     // Goal: Enter an array of file extensions and return
     // a) Array of objects with appropriate properties
     // b) Same as (a) + a dom object
+
+    // Usage
+    // Constructor:
+        // folderRoot = root folder for images
+        // createDomObjects = boolean to generate DOM objects at obj.Object
+    // Methods:
+        // Import => takes in a single file of standard file model (eg. PhotoModel)
+            // PhotoModel contains Folder, FileName, LowResFileName, AltText, SortOrder
+            // Use => set variable importObjectArray = fileArray.map(i => Import(i))
+        // Treat all other methods as internal use only
     constructor(folderRoot = "../lib/images", createDomObjects = false) {
         // Set externally
         this._folderRoot = folderRoot;
@@ -10,40 +20,68 @@
         this._imageTypes = ["png", "jpg", "jpeg", "gif"];
     }
 
+    // #region Methods
+
+    /*
+    ImportBulk(fileArray) {
+        // Todo: take in array, load all the low res, await the high res, change the source after on the screen (somehow)
+    }
+    */
+
     Import(file) {
         // All file objects must contain "FileName" property
         let fileObj = {};
         // 1) Determine file type
-        try {
-            fileObj.Type = this.DetermineFileType(file.FileName.split(".").slice(-1)[0]);
-        } catch {
-            fileObj.Type = "div";
-        }
-        
+        fileObj.Type = this.DetermineFileType(file.FileName.split(".").slice(-1)[0]);
         // 2) Get file type properties
         fileObj.Properties = this.GetFileProperties(file, fileObj.Type);
         // 3) Create dom object if requested
         if (this._createDomObjects) {
             fileObj.Object = this.CreateDomObject(fileObj);
         }
-        // 4) Return Obj
+        // 4) Return object
+        return fileObj;
+    }
+
+    ImportLowRes(file) {
+        // All file objects must contain "FileName" property
+        let fileObj = {};
+        // 1) Determine file type
+        fileObj.Type = this.DetermineFileType(file.FileName.split(".").slice(-1)[0]);
+        // 2) Get file type properties
+        fileObj.Properties = this.GetFileProperties(file, fileObj.Type, false, true);
+        // 3) Create dom object if requested
+        if (this._createDomObjects) {
+            fileObj.Object = this.CreateDomObject(fileObj);
+        }
+        // 4) Return object
         return fileObj;
     }
 
     DetermineFileType(fileExtension) {
         if (this._imageTypes.includes(fileExtension)) {
             return "img";
+        } else {
+            return "div";
         }
     }
 
-    GetFileProperties(file, fileType) {
+    GetFileProperties(file, fileType, lazy = false, lowRes = false) {
         let properties = {};
         // Image
         if (fileType == "img") {
-            properties.src = `${this._folderRoot}/${file.Folder}/${file.FileName}`;
-            properties.srcLowRes = file.LowResFileName ? `../lib/images/${file.Folder}/${file.LowResFileName}` : "";
+            // src
+            if (lowRes && file.LowResFileName) {
+                properties.src = `../lib/images/${file.Folder}/${file.LowResFileName}`;
+            } else {
+                properties.src = `${this._folderRoot}/${file.Folder}/${file.FileName}`;
+            }
+            // alt text
             properties.alt = file.AltText;
-            properties.loading = "lazy";
+            // lazy loading (loads when near viewport)
+            if (lazy) {
+                properties.loading = "lazy";
+            }
         }
 
         return properties;
@@ -56,6 +94,9 @@
         });
         return obj;
     }
+
+    // #endregion Methods
+
 }
 
 export class Carousel extends Importer {
@@ -84,7 +125,7 @@ export class Carousel extends Importer {
         this._paginationClasses = ["carousel-pagination"]; // attached to pagination container
         this._itemClasses = ["carousel-object"]; // Classes for viewport items (images)
         this._activeItemClass = "carousel-active"; // Active class for viewport items (images)
-        this._arrowClasses = ["carousel-pagination-arrow"]
+        this._arrowClasses = ["carousel-pagination-arrow"];
         this._circleClasses = ["carousel-pagination-circle"];
         this._activePaginationClass = "carousel-pagination-active";
         // Functions

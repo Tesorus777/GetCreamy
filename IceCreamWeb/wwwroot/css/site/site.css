@@ -18,7 +18,7 @@ body {
     overflow-y: hidden;
 }
 
-body > *:not(script) {
+body > *:not(script):not(dialog) {
     display: grid;
 }
 
@@ -126,10 +126,16 @@ li.nav-item > a, li.nav-item > a:visited {
         transform-origin: bottom left;
     }
 
+li.nav-item:has(svg) {
+    height: 1.6em;
+    width: 1.6em;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+}
+
 /* #endregion Header */
-
 /* #region Main Body */
-
 div.main {
     display: grid;
     grid-auto-flow: row;
@@ -209,6 +215,14 @@ div.main-gdpr-toast-container p {
 }
 
 /* #endregion GDPR Toast */
+
+/* #region Shopping Cart */
+
+dialog.cart-dialog {
+    /*display: none;*/
+}
+
+/* #endregion Shopping Cart */
 
 /* #region Media Queries */
 

@@ -3,12 +3,18 @@
         this.baseUrl = baseUrl;
     }
 
+    // #region Getters and Setters
+
     get BaseUrl() {
         return this.baseUrl;
     }
     set BaseUrl(newBaseUrl) {
         this.baseUrl = newBaseUrl;
     }
+
+    // #region Getters and Setters
+
+    // #region Methods
 
     async PerformFetch(url, method, data = null) {
         let response;
@@ -106,6 +112,9 @@
         //this.PerformFetch(`${this.BaseUrl}/ErrorLog`, "POST", errorLog); // turn this on when API available
         console.log(errorLog);
     }
+
+    // #endregion Methods
+
 }
 class StorageClass {
     constructor(baseUrl) {
@@ -117,6 +126,13 @@ class StorageClass {
         this._toastGDPR = document.querySelector(`div#ToastGDPR`);
         this._acceptGDPR = document.querySelector(`button#AcceptGDPR`);
         this._toastPoppedClassGDPR = "main-gdpr-toast-popped";
+        this._gdprStorageItem = {
+            Type: 0,
+            Name: "UserViewedGDPR",
+            "ValueName": "UserViewedGDPR",
+            "ValueEndpoint": false,
+            "Duration": 60
+        }
 
         this.loadedEvent = new Event("storageLoaded");
         // #endregion Set Internally
@@ -135,32 +151,73 @@ class StorageClass {
     }
     get Cookie() {
         return document.cookie.split("; ").reduce((acc, curr) => {
-            acc[curr.split("=")[0]] = curr.split("=")[1];
+            // This will set the cookie value to a known type (eg: bool or number) and default to string if it fails
+            try {
+                acc[curr.split("=")[0]] = JSON.parse(curr.split("=")[1]);
+            } catch {
+                acc[curr.split("=")[0]] = curr.split("=")[1];
+            }
             return acc;
         }, {});
     }
     set Cookie(cookie) {
         document.cookie = cookie;
     }
+
+    get Session() {
+
+    }
+    set Session(token) {
+
+    }
+
+    get LocalStorage() {
+        return localStorage
+    }
     // #endregion Getters and Setters
 
     // #region Methods
+
     async Initialize() {
         // 1) Get User Preference
         let storageList = await this._api.Get(`UserInfo/Storage/${this.Cookie["UserPreference"] ? true : false}`); // todo: set UserPreference cookie to true(allow optional) or false(necesseccary only)
-        // 2) Determine which type each is and if the key already exists
+        // set GDPR (with View=false default) as first storageItem to be loaded
+        storageList.unshift(this._gdprStorageItem);
+        // 2) Determine which type each is and if the key (item.Name) already exists
         // if key exists: get duration from API and reset duration
-        // if key !exist: run function to grab a value from API and set it
+        // if key !exist: run function to grab a value from API and set it as new
+
+        // item.ValueEndpoint is the API URL that returns the data to be set at item.ValueName
+            // item.ValueName = api.get(item.ValueEndpoint)
+
+        // item:
+            // Type: 0==cookie, 1==session, 2==localStorage
+            // Name: the key to be used in the cookie/session/localStorage
+            // ValueName: the key for the value as returned by the API
+            // ValueEndpoint: the url extension to be used with the API to get a value
+                // (eg: ValueEndpoint "User/New" returns a value {UserId: "guid"} where "UserId" is the ValueName)
+                // (eg: ValueEndpoint true (boolean) returns no value, but code below creates an object {ValueName: "val"})
+            // Duration: duration for cookies in days
         for await (const item of storageList) {
-            if (item.Type == 0 && item.ValueEndpoint && !this.Cookie[item.Name]) {
+            if (item.Type == 0) {
                 // Cookie
-                await this.NewCookie(item);
+                if (!this.Cookie[item.Name] && item.ValueEndpoint !== null) {
+                    // If the cookie doesn't exist and has an API endpoint, create a new cookie
+                    await this.NewCookie(item);
+                } else if (this.Cookie[item.Name]) {
+                    // If the cookie exists, reset the duration
+                    this.ResetCookieDuration(item);
+                }
+
             } else if (item.Type == 1) {
                 // Session Storage
 
             } else if (item.Type == 2) {
                 // Local Storage
-
+                if (!this.LocalStorage.getItem(item.Name)) {
+                    // If the localStorage item doesn't exist and has an API endpoint, create a new storage item
+                    await this.SetLocalStorage(item);
+                } 
             }
         }
         // 3) Dispatch event to indicate cookies loaded
@@ -172,7 +229,7 @@ class StorageClass {
             this._toastGDPR.classList.remove(this._toastPoppedClassGDPR);
         });
         // 5) Notify user of cookies
-        if (!this.Cookie["UserViewedGDPR"]) {
+        if (this.Cookie["UserViewedGDPR"] == false) {
             this._toastGDPR.classList.add(this._toastPoppedClassGDPR);
         }
     }
@@ -184,17 +241,24 @@ class StorageClass {
         let value;
         if (typeof (item.ValueEndpoint) === "string") {
             // Assume string is API endpoint
-            value = await this._api.Get(item.ValueEndpoint)
+            value = await this._api.Get(item.ValueEndpoint);
         } else if (typeof (item.ValueEndpoint) === "boolean") {
             // Assume boolean is feature flag
             value = {};
             value[item.ValueName] = item.ValueEndpoint;
         }
-        document.cookie = `${item.Name}=${value[item.ValueName]};${expiration}path=/;`;
+        this.Cookie = `${item.Name}=${value[item.ValueName]};${expiration}path=/;`;
+    }
+
+    ResetCookieDuration(item) {
+        // This resets a cookie's duration while retaining the value
+        let expiration = item.Duration ? ` expires=${this.GetExpiration(item.Duration)}; ` : "";
+        let value = this.Cookie[item.ValueName];
+        this.Cookie = `${item.Name}=${value};${expiration}path=/;`;
     }
 
     RemoveCookie(name) {
-        document.cookie = `${name}=; expires=Thu, 1 Jan 1970 00:00:00 UTC;`;
+        this.Cookie = `${name}=; expires=Thu, 1 Jan 1970 00:00:00 UTC;`;
     }
 
     GetExpiration(daysToExpire) {
@@ -213,24 +277,27 @@ class StorageClass {
 
     // #endregion Local Storage Methods
 
+    async SetLocalStorage(item) {
+        // Local Storage items will never be booleans
+        let value = await this._api.Get(item.ValueEndpoint);
+        this.LocalStorage.setItem(item.Name, value[item.ValueName]);
+    }
+
+    ClearLocalStorage() {
+        this.LocalStorage.clear();
+    }
+
     // #region Extra Methods
 
     ViewedGDPR() {
-        let gdprViewed = {
-            Type: 0,
-            Name: "UserViewedGDPR",
-            "ValueName": "UserViewedGDPR",
-            "ValueEndpoint": true,
-            "Duration": 60
-        }
-        if (!this.Cookie["UserViewedGDPR"]) {
-            this.NewCookie(gdprViewed);
-        }
+        let expiration = this._gdprStorageItem.Duration ? ` expires=${this.GetExpiration(this._gdprStorageItem.Duration)}; ` : "";
+        document.cookie = `${this._gdprStorageItem.Name}=true;${expiration}path=/;`;
     }
 
     // #endregion Extra Methods
 
     // #endregion Methods
+
 }
 
 export { APIFetcher, StorageClass };
