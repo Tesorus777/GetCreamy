@@ -21,7 +21,7 @@
         "Delete": "",
         "Other": {
           "SelectAll": "Inventory_Select",
-          "SelectOne": "Inventory_CurrentStockOne",
+          "SelectOne": "Inventory_CurrentStockOneRecipe",
           "SelectOrder": "Inventory_OrderSelectBulk",
           "SelectOrderAndDelete": "Inventory_OrderDeleteBulk"
         }

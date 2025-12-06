@@ -180,7 +180,7 @@ class StorageClass {
 
     async Initialize() {
         // 1) Get User Preference
-        let storageList = await this._api.Get(`UserInfo/Storage/${this.Cookie["UserPreference"] ? true : false}`); // todo: set UserPreference cookie to true(allow optional) or false(necesseccary only)
+        let storageList = await this._api.Get(`User/Storage/${this.Cookie["UserPreference"] ? true : false}`); // todo: set UserPreference cookie to true(allow optional) or false(necesseccary only)
         // set GDPR (with View=false default) as first storageItem to be loaded
         storageList.unshift(this._gdprStorageItem);
         // 2) Determine which type each is and if the key (item.Name) already exists

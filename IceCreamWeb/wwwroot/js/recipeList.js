@@ -83,6 +83,10 @@ async function RecipeCardBuilder(sortBy) {
         // #endregion
 
         // #region Front Card
+
+        // importer needs to create an Id or some sort of tag in order to identify elements on the screen and replace them when the new image has loaded
+        // this seems like a timing issue as if the image loads before the element is on screen, then what?
+
         let img = importer.Import(recipe.Photo).Object;
 
         // Front Classes

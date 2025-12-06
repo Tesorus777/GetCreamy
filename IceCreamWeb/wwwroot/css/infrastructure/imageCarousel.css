@@ -11,16 +11,17 @@ div.carousel-container {
 /* #region Viewport */
 
 div.carousel-viewport {
+    display: flex;
+    height: fit-content;
     position: relative;
     overflow: hidden;
-    display: flex;
     overflow-x: auto;
     column-gap: 2px;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    border-radius: 1em;
+    border-radius: 2em;
 }
 
     div.carousel-viewport::-webkit-scrollbar {
@@ -49,15 +50,18 @@ div.carousel-pagination {
 svg.carousel-pagination-arrow, svg.carousel-pagination-circle {
     max-height: 2em;
     fill: var(--accent-two-medium-light);
+    transition-duration: 0.08s;
 }
 
     svg.carousel-pagination-arrow:hover, svg.carousel-pagination-circle:hover {
+        cursor: pointer;
         fill: var(--accent-two-medium-dim);
         filter: drop-shadow(0 0.15em 0.4em var(--shadow-color));
         transform: translateY(-0.15em);
     }
 
     svg.carousel-pagination-arrow:active, svg.carousel-pagination-circle:active {
+        cursor: pointer;
         fill: var(--accent-two-medium-dim);
         transform: translateY(0);
     }

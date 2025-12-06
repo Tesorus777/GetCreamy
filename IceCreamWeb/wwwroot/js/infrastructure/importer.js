@@ -6,56 +6,56 @@
     // Usage
     // Constructor:
         // folderRoot = root folder for images
-        // createDomObjects = boolean to generate DOM objects at obj.Object
     // Methods:
         // Import => takes in a single file of standard file model (eg. PhotoModel)
-            // PhotoModel contains Folder, FileName, LowResFileName, AltText, SortOrder
+            // PhotoModel contains Folder, FileName, LowResFileName, ThumbnailFileName, AltText, SortOrder
             // Use => set variable importObjectArray = fileArray.map(i => Import(i))
+        // ImportThumbnail => sets FileName to ThumbnailFileName and runs Import(file)
         // Treat all other methods as internal use only
-    constructor(folderRoot = "../lib/images", createDomObjects = false) {
+    constructor(folderRoot = "../lib/images") {
         // Set externally
         this._folderRoot = folderRoot;
-        this._createDomObjects = createDomObjects;
         // Set internally
+        this._styleSheet = "/css/infrastructure/importer.css";
+        // Images
         this._imageTypes = ["png", "jpg", "jpeg", "gif"];
+        this._lazyContainerClasses = ["import-lazy-container"];
+        this._lazyClasses = ["import-lazy-img"];
+        this._imageClasses = [];
+        this._imageLoadedClasses = ["import-loaded"];
+
+        this._imageLoaded = this.ImageLoaded.bind(this);
+
+        this.AddStyles();
     }
 
     // #region Methods
 
-    /*
-    ImportBulk(fileArray) {
-        // Todo: take in array, load all the low res, await the high res, change the source after on the screen (somehow)
+    AddStyles() {
+        let head = querySelector("head");
+        let linkSheet = querySelector(`link[href='${this._styleSheet}']`);
+        if (!linkSheet) {
+            let sheet = document.createElement("link");
+            sheet.rel = "stylesheet";
+            sheet.href = this._styleSheet;
+            head.append(sheet);
+        }
     }
-    */
 
     Import(file) {
         // All file objects must contain "FileName" property
         let fileObj = {};
-        // 1) Determine file type
-        fileObj.Type = this.DetermineFileType(file.FileName.split(".").slice(-1)[0]);
-        // 2) Get file type properties
-        fileObj.Properties = this.GetFileProperties(file, fileObj.Type);
-        // 3) Create dom object if requested
-        if (this._createDomObjects) {
-            fileObj.Object = this.CreateDomObject(fileObj);
-        }
+        // 1) Get file type properties
+        fileObj.Properties = this.GetFileProperties(file);
+        // 2) Create dom object
+        fileObj.Object = this.CreateDomObject(fileObj.Properties);
         // 4) Return object
         return fileObj;
     }
 
-    ImportLowRes(file) {
-        // All file objects must contain "FileName" property
-        let fileObj = {};
-        // 1) Determine file type
-        fileObj.Type = this.DetermineFileType(file.FileName.split(".").slice(-1)[0]);
-        // 2) Get file type properties
-        fileObj.Properties = this.GetFileProperties(file, fileObj.Type, false, true);
-        // 3) Create dom object if requested
-        if (this._createDomObjects) {
-            fileObj.Object = this.CreateDomObject(fileObj);
-        }
-        // 4) Return object
-        return fileObj;
+    ImportThumbnail(file) {
+        file.FileName = file.ThumbnailFileName;
+        return this.Import(file);
     }
 
     DetermineFileType(fileExtension) {
@@ -66,21 +66,31 @@
         }
     }
 
-    GetFileProperties(file, fileType, lazy = false, lowRes = false) {
+    GetFileProperties(file) {
+        // Mandatory:
+            // Every object needs a "tag" and a "classList"
         let properties = {};
+        let fileType = this.DetermineFileType(file.FileName.split(".").slice(-1)[0]);
         // Image
         if (fileType == "img") {
-            // src
-            if (lowRes && file.LowResFileName) {
-                properties.src = `../lib/images/${file.Folder}/${file.LowResFileName}`;
-            } else {
-                properties.src = `${this._folderRoot}/${file.Folder}/${file.FileName}`;
-            }
-            // alt text
-            properties.alt = file.AltText;
-            // lazy loading (loads when near viewport)
-            if (lazy) {
-                properties.loading = "lazy";
+            // Parent container
+            properties.tag = "div";
+            properties.classList = this._lazyContainerClasses;
+            properties.child = {};
+            // Parent lazy loaded div with background image
+            properties.child.tag = "div";
+            properties.child.style = `background-image: url("${this._folderRoot}/${file.Folder}/${file.LowResFileName}")`;
+            properties.child.classList = this._lazyClasses;
+            properties.child.child = {};
+            // Child image
+            properties.child.child.tag = "img";
+            properties.child.child.classList = this._imageClasses;
+            properties.child.child.src = `${this._folderRoot}/${file.Folder}/${file.FileName}`;
+            properties.child.child.loading = "lazy";
+            properties.child.child.alt = file.AltText;
+            properties.child.child.event = {
+                name: "load",
+                func: this._imageLoaded
             }
         }
 
@@ -88,11 +98,27 @@
     }
 
     CreateDomObject(fileObj) {
-        let obj = document.createElement(fileObj.Type);
-        Object.entries(fileObj.Properties).forEach(([key, value]) => {
-            obj.setAttribute(key, value);
+        // Recursive: will create a dom object and attach it to the parent for every child
+        const excludeFields = ["tag", "classList", "child", "event"]; // fields that do not have attributes
+        let obj = document.createElement(fileObj.tag);
+        obj.classList.add(...fileObj.classList);
+        // Set an attribute for everything not in the excluded fields (i.e. have attributes)
+        Object.keys(fileObj).filter(key => !excludeFields.includes(key)).forEach(key => {
+            obj.setAttribute(key, fileObj[key]);
         });
+        // If there is an event to be added, add it
+        if (fileObj.event != undefined) {
+            obj.addEventListener(fileObj.event.name, fileObj.event.func);
+        }
+        // If there is a child element, build it
+        if (fileObj.child != undefined) {
+            obj.append(this.CreateDomObject(fileObj.child));
+        }
         return obj;
+    }
+
+    ImageLoaded(event) {
+        event.target.classList.add(...this._imageLoadedClasses);
     }
 
     // #endregion Methods
@@ -104,6 +130,10 @@ export class Carousel extends Importer {
         // Importer
         super(imageRoot, true);
         this.ImageObjArray = imageItems.map(i => this.Import(i));
+        if (imageItems.length > 0) {
+            this.ImageObjArray.unshift(this.Import(imageItems[imageItems.length - 1]));
+            this.ImageObjArray.push(this.Import(imageItems[0]));
+        }
         // Set externally
         this._location = querySelector(selector);
         // #region Set Internally
@@ -128,13 +158,20 @@ export class Carousel extends Importer {
         this._arrowClasses = ["carousel-pagination-arrow"];
         this._circleClasses = ["carousel-pagination-circle"];
         this._activePaginationClass = "carousel-pagination-active";
+
+        // Internal Selection Tracking Variables
+        this._currentSelectedIndex = 0;
+        this._maxViewIndex = this.ImageObjArray.length - 3;
+        // Selected item and pagination
+        this._viewableAttribute = "carousel-viewable";
+
         // Functions
         this._previousItem = this.PreviousItem.bind(this);
         this._nextItem = this.NextItem.bind(this);
         this._specificItem = this.SpecificItem.bind(this);
         // Automation
         this._infiniteLoop = infinteLoop;
-        this._autoScroll = autoScroll && infinteLoop; // Need to set both autoscroll and infiniteloop on
+        this._autoScroll = autoScroll && infinteLoop && (imageItems.length > 1); // Need to set both autoscroll and infiniteloop on and more than one image item
         this._autoScrollReverse = false; // false = NextItem (L to R), true = PreviousItem (R to L)
         this._autoScrollRunning = false;
         this._autoScrollId;
@@ -160,10 +197,11 @@ export class Carousel extends Importer {
     get CurrentSelectedItem() {
         return querySelector(`.${this._activeItemClass}`);
     }
-    set CurrentSelectedItem(index) {
-        let viewPortItems = querySelectorAll(`.${this._itemClasses.join(".")}`);
+    set CurrentSelectedItem(viewableIndex) {
+        // Can only select viewable items
+        let viewPortItems = querySelectorAll(`[${this._viewableAttribute}="true"].${this._itemClasses.join(".")}`);
         viewPortItems.map(i => i.classList.remove(this._activeItemClass));
-        viewPortItems[index].classList.add(this._activeItemClass);
+        viewPortItems[viewableIndex].classList.add(this._activeItemClass);
 
     }
     get CurrentSelectedPagination() {
@@ -175,11 +213,22 @@ export class Carousel extends Importer {
         paginationItems[index].classList.add(this._activePaginationClass);
     }
     get CurrentSelectedIndex() {
-        let l = querySelectorAll(`svg.${this._circleClasses.join(".")}`);
-        return l.indexOf(this.CurrentSelectedPagination);
+        return this._currentSelectedIndex;
     }
-    get MaxSelectIndex() {
-        return querySelectorAll(`svg.${this._circleClasses.join(".")}`).length - 1;
+
+    set CurrentSelectedIndex(index) {
+        this._currentSelectedIndex = index;
+    }
+
+    get CurrentTotalIndex() {
+        return this._totalIndex;
+    }
+    set CurrentTotalIndex(index) {
+        this._totalIndex = index;
+    }
+    get MaxViewIndex() {
+        // Maximum index of viewable items
+        return this._maxViewIndex;
     }
 
     // #endregion Get and Set
@@ -208,17 +257,30 @@ export class Carousel extends Importer {
         let leftArrow = this.BuildSVG(this._arrowClasses, this._leftArrowPath, "click", this._previousItem);
         let rightArrow = this.BuildSVG(this._arrowClasses, this._rightArrowPath, "click", this._nextItem);
         // Create Carousel List
-        this.ImageObjArray.map((item, index) => {
+        this.ImageObjArray.map((item, index, array) => {
+            // if index is first or last, do not have an object id, do not add a pagination object
+            if (index > 0 && index < array.length - 1) {
+                // Add normal id
+                item.Object.id = `carousel_${index - 1}`;
+                item.Object.setAttribute(this._viewableAttribute, true);
+                // Pagination Object
+                let paginationObj = this.BuildSVG(this._circleClasses, this._circlePath, "click", this._specificItem, [{ Type: "index", Value: `#carousel_${index - 1}` }]);
+                item.PaginationObject = paginationObj;
+            } else if (index == 0) {
+                // Add last id to cloned obj at first index
+                item.Object.id = `carousel_${array.length - 3}_clone`;
+                item.Object.setAttribute(this._viewableAttribute, false);
+            } else if (index == array.length - 1) {
+                // Add first id to cloned obj at last index
+                item.Object.id = `carousel_0_clone`;
+                item.Object.setAttribute(this._viewableAttribute, false);
+            }
             // Add carousel item classes
-            item.Object.id = `carousel_${index}`;
             item.Object.classList.add(...this._itemClasses);
-            // Pagination Object
-            let paginationObj = this.BuildSVG(this._circleClasses, this._circlePath, "click", this._specificItem, [{ Type: "index", Value: `#carousel_${index}` }]);
-            item.PaginationObject = paginationObj;
         });
         // Set classes
-        this.ImageObjArray[0].Object.classList.add(this._activeItemClass);
-        this.ImageObjArray[0].PaginationObject.classList.add(this._activePaginationClass);
+        this.ImageObjArray[1].Object.classList.add(this._activeItemClass);
+        this.ImageObjArray[1].PaginationObject.classList.add(this._activePaginationClass);
         // Set Mobile Swipe Events
         this._carouselViewport.addEventListener('touchstart', e => {
             e.preventDefault();
@@ -231,48 +293,83 @@ export class Carousel extends Importer {
         });
         // Append
         this._carouselViewport.append(...this.ImageObjArray.map(i => i.Object));
-        this._carouselPagination.append(leftArrow, ...this.ImageObjArray.map(i => i.PaginationObject), rightArrow);
+        if (this.ImageObjArray.length > 3) {
+            // Only show pagination if there is more than one image
+            this._carouselPagination.append(leftArrow, ...this.ImageObjArray.filter(item => item.PaginationObject != undefined).map(i => i.PaginationObject), rightArrow);
+        }
         this.Location.append(this._carouselViewport, this._carouselPagination);
         // Start Scroll
+        this.ScrollToCurrentIndex(true);
         this.StartAutoScroll();
     }
 
     PreviousItem(event) {
-        // Set Active Item
-        if (this.CurrentSelectedIndex > 0) {
-            this.CurrentSelectedItem = this.CurrentSelectedIndex - 1;
-            this.CurrentSelectedPagination = this.CurrentSelectedIndex - 1;
-        } else if (this.CurrentSelectedIndex == 0 && this._infiniteLoop) {
-            this.CurrentSelectedItem = this.MaxSelectIndex;
-            this.CurrentSelectedPagination = this.MaxSelectIndex;
-        }
-        // If there's an event, a human input interrupts the autoScroll
+        // 1) If there's an event, a human input interrupts the autoScroll
         if (event) {
             this.PauseAutoScroll();
         }
-        // Scroll to Selected
-        this.ScrollToCurrentIndex();
+        // 2) Set Active Item
+        let timer = 0;
+        let snap = false;
+        if (this.CurrentSelectedIndex > 0) {
+            // 2a) if greater than 0, set new current item, pagination, and decrease the index
+            this.CurrentSelectedItem = this.CurrentSelectedIndex - 1;
+            this.CurrentSelectedPagination = this.CurrentSelectedIndex - 1;
+            this.CurrentSelectedIndex--;
+        } else if (this.CurrentSelectedIndex == 0 && this._infiniteLoop) {
+            // 2b) if min, scroll one less, then snap to end
+            timer = 300; // Wait for smooth scroll animation to end (there is no better solution at the moment)
+            snap = true;
+            // scroll beyond min
+            this._carouselViewport.scrollTo({
+                left: this._carouselViewport.childNodes[0].offsetLeft,
+                behavior: "smooth"
+            });
+            this.CurrentSelectedItem = this.MaxViewIndex;
+            this.CurrentSelectedPagination = this.MaxViewIndex;
+            this.CurrentSelectedIndex = this.MaxViewIndex;
+        }
+        // 3) Scroll to Selected
+        setTimeout(() => {
+            this.ScrollToCurrentIndex(snap);
+        }, timer);
     }
 
     NextItem(event) {
-        // Set Active Item
-        if (this.CurrentSelectedIndex < this.MaxSelectIndex) {
-            this.CurrentSelectedItem = this.CurrentSelectedIndex + 1;
-            this.CurrentSelectedPagination = this.CurrentSelectedIndex + 1;
-        } else if (this.CurrentSelectedIndex == this.MaxSelectIndex && this._infiniteLoop) {
-            this.CurrentSelectedItem = 0;
-            this.CurrentSelectedPagination = 0;
-        }
-        // If there's an event, a human input interrupts the autoScroll
+        // 1) If there's an event, a human input interrupts the autoScroll
         if (event) {
             this.PauseAutoScroll();
         }
-        // Scroll to Selected
-        this.ScrollToCurrentIndex();
+        // 2) Set Active Item
+        let timer = 0;
+        let snap = false;
+        if (this.CurrentSelectedIndex < this.MaxViewIndex) {
+            // 2a) if less than max, set new current item, pagination, and increase the index
+            this.CurrentSelectedItem = this.CurrentSelectedIndex + 1;
+            this.CurrentSelectedPagination = this.CurrentSelectedIndex + 1;
+            this.CurrentSelectedIndex++;
+        } else if (this.CurrentSelectedIndex == this.MaxViewIndex && this._infiniteLoop) {
+            // 2b) if max, scroll one more, then snap to start
+            timer = 300; // Wait for smooth scroll animation to end (there is no better solution at the moment)
+            snap = true;
+            // scroll beyond max
+            this._carouselViewport.scrollTo({
+                left: this._carouselViewport.childNodes[this._carouselViewport.childNodes.length - 1].offsetLeft,
+                behavior: "smooth"
+            });
+            this.CurrentSelectedItem = 0;
+            this.CurrentSelectedPagination = 0;
+            this.CurrentSelectedIndex = 0;
+        }
+        // 3) Scroll to Selected
+        setTimeout(() => {
+            this.ScrollToCurrentIndex(snap);
+        }, timer);
     }
 
     SpecificItem(event) {
         // Set Active Item
+        this.CurrentSelectedIndex = Number(event.target.getAttribute("index").split("_")[1]);
         this.CurrentSelectedItem.classList.remove(this._activeItemClass);
         querySelector(event.target.getAttribute("index")).classList.add(this._activeItemClass);
         this.CurrentSelectedPagination.classList.remove(this._activePaginationClass);
@@ -283,8 +380,15 @@ export class Carousel extends Importer {
         this.ScrollToCurrentIndex();
     }
 
-    ScrollToCurrentIndex() {
-        this._carouselViewport.scrollLeft = (this.CurrentSelectedItem.scrollWidth * this.CurrentSelectedIndex);
+    ScrollToCurrentIndex(snap = false) {
+        let scrollBehavior = "smooth";
+        if (snap) {
+            scrollBehavior = "instant";
+        }
+        this._carouselViewport.scrollTo({
+            left: this.CurrentSelectedItem.offsetLeft,
+            behavior: scrollBehavior
+        });
     }
 
     // #region AutoScroll Methods
@@ -312,7 +416,7 @@ export class Carousel extends Importer {
         if (this._autoScrollRunning) {
             this._autoScrollRunning = false;
             clearInterval(this._autoScrollId);
-            setTimeout(() => { this.StartAutoScroll(); }, this._timerPause);
+            //setTimeout(() => { this.StartAutoScroll(); }, this._timerPause);
         }
     }
 
@@ -365,11 +469,13 @@ export class MenuList extends Importer {
         this._menuList;
         this._imageList;
         // Classes
-        this._menuListContainerClass = "menuList-menu-container";
-        this._menuListImageContainerClass = "menuList-image-container";
+        this._menuListContainerClasses = ["menuList-menu-container"];
+        this._menuListImageContainerClasses = ["menuList-menu-image-container"];
 
-        this._menuItemContainerClass = "menuList-item-container";
-        this._menuItemTextClass = "menuList-item-text";
+        this._menuItemImageContainerClasses = ["menuList-image-container"];
+
+        this._menuItemContainerClasses = ["menuList-item-container"];
+        this._menuItemTextClasses = ["menuList-item-text"];
         this._menuItemImageHoverClass = "menuList-image-hover";
         // #endregion
 
@@ -410,9 +516,9 @@ export class MenuList extends Importer {
         this._container.classList.add(...this._containerClasses);
         // Create Subcontainers
         this._menuList = document.createElement("div");
-        this._menuList.classList.add(this._menuListContainerClass);
+        this._menuList.classList.add(...this._menuListContainerClasses);
         this._imageList = document.createElement("div");
-        this._imageList.classList.add(this._menuListImageContainerClass);
+        this._imageList.classList.add(...this._menuListImageContainerClasses);
     }
 
     Build(menuItems) {
@@ -423,8 +529,13 @@ export class MenuList extends Importer {
        */
        // Build MenuItems
         this.MenuItems = menuItems.map(i => {
+            // Create Image Container
+            let imageItemContainer = document.createElement("div");
+            imageItemContainer.classList.add(...this._menuItemImageContainerClasses);
+            imageItemContainer.append(this.Import(i.Photo).Object);
+            // return object
             return {
-                ImageItem: this.Import(i.Photo).Object,
+                ImageItem: imageItemContainer,
                 Item: this.BuildMenuItem(i.Item)
             }
         });
@@ -448,8 +559,8 @@ export class MenuList extends Importer {
             let container = document.createElement("div");
             let text = document.createElement("h3");
             // Classes
-            container.classList.add(this._menuItemContainerClass);
-            text.classList.add(this._menuItemTextClass);
+            container.classList.add(...this._menuItemContainerClasses);
+            text.classList.add(...this._menuItemTextClasses);
             // Append and return
             container.append(text);
             item = container;
@@ -462,7 +573,7 @@ export class MenuList extends Importer {
         return element instanceof Element || element instanceof HTMLDocument;
     }
 
-    HoverImage(imageObj, toggle = false) {
+    HoverImage(imageObj, toggle = false) {      
         imageObj.classList.remove(this._menuItemImageHoverClass);
         if (toggle) {
             imageObj.classList.add(this._menuItemImageHoverClass);

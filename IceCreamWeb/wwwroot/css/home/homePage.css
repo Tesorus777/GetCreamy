@@ -82,12 +82,10 @@ div.home-item {
     grid-row: 1;
     grid-column: 1;
     aspect-ratio: 1;
+    border-radius: 2em;
     object-fit: cover;
+    overflow: hidden;
 }
-
-    .home-featured-image img {
-        border-radius: 2em;
-    }
 
 .home-featured-description {
     grid-row: 1;
@@ -145,25 +143,8 @@ form.home-suggestion-form {
         grid-row: 5;
         grid-column: 2;
         justify-self: end;
-        padding: 0.5em 1em;
         margin-right: 2em;
-        width: min-content;
-        font-size: 1.05rem;
-        color: var(--main-text);
-        background-color: var(--accent-two-medium-light);
-        border-radius: 0.35em;
-        border: 1px solid var(--accent-two-medium-dim);
     }
-
-        form.home-suggestion-form input[type="submit"]:hover {
-            box-shadow: 0 0.15em 0.2em var(--shadow-color);
-            transform: translateY(-0.15em);
-        }
-
-        form.home-suggestion-form input[type="submit"]:active {
-            box-shadow: 0 0.05em 0.2em var(--shadow-color) inset;
-            transform: translateY(0);
-        }
 
 input.suggestion-input, textarea.suggestion-input {
     font-size: 0.85rem;

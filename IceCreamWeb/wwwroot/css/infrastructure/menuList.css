@@ -1,42 +1,46 @@
-﻿div.menuList-container {
+﻿.menuList-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 1rem;
 }
 
-div.menuList-menu-container {
+.menuList-menu-container {
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
     z-index: 1;
 }
 
-    div.menuList-menu-container * {
+    .menuList-menu-container * {
         transition: all 0.4s ease-out;
     }
 
-div.menuList-image-container {
+.menuList-menu-image-container {
     position: relative;
+    height: 100%;
+    border-radius: 2em;
     aspect-ratio: 1;
+    overflow: hidden;
     z-index: 2;
 }
 
-    div.menuList-image-container img {
+    .menuList-image-container {
         position: absolute;
-        border-radius: 2em;
         opacity: 0;
         transition: opacity 0.4s ease-in-out;
     }
 
-        div.menuList-image-container img:first-child {
-            opacity: 1;
-        }
+    .menuList-image-container:first-child {
+        opacity: 1;
+    }
 
-    div.menuList-image-container:has(img.menuList-image-hover:not(:first-child)) img:first-child {
+    .menuList-menu-image-container:has(.menuList-image-hover:not(.menuList-image-container:first-child)) .menuList-image-container:first-child {
+        /* prevents jerkiness when hovering from 2 through n items in menuList then transitioning to first element */
         opacity: 0;
     }
 
-    div.menuList-image-container > img.menuList-image-hover {
+    .menuList-image-hover {
+        /* only match .menuList-image-hover item that is direct descendent of .menuList-menu-image-container */
         opacity: 1;
         z-index: 3;
     }

@@ -32,6 +32,35 @@ img {
     shape-margin: 0.75rem; /* akin to text wrapping (how close can text get to img) */
 }
 
+/* #region Controls */
+
+button[type=button], input[type=submit] {
+    width: fit-content;
+    padding: 0.5em 1em;
+    margin: 0.2em 0;
+    font-size: 1.05rem;
+    text-wrap-mode: nowrap;
+    color: var(--main-text);
+    background-color: var(--accent-two-medium-light);
+    border-radius: 0.35em;
+    border: 1px solid var(--accent-two-medium-dim);
+    transition-duration: 0.08s;
+}
+
+    button[type=button]:hover, input[type=submit]:hover {
+        cursor: pointer;
+        box-shadow: 0 0.15em 0.2em var(--shadow-color);
+        transform: translateY(-0.15em);
+    }
+
+    button[type=button]:active, input[type=submit]:active {
+        cursor: pointer;
+        box-shadow: 0 0.05em 0.2em var(--shadow-color) inset;
+        transform: translateY(0);
+    }
+
+/* #endregion Controls */
+
 /* #endregion Global */
 
 /* #region Header */
@@ -135,6 +164,7 @@ li.nav-item:has(svg) {
 }
 
 /* #endregion Header */
+
 /* #region Main Body */
 div.main {
     display: grid;

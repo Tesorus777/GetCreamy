@@ -24,7 +24,7 @@ public class RecipeController : Controller
     public IActionResult Index(string RecipeName)
     {
         RecipeBundleModel recipeBundle = _data.RecipeSelectOneBundle(RecipeName);
-        ViewBag.Title = recipeBundle.Recipe.Name;
+        ViewBag.Title = $"GetCreamy | {recipeBundle.Recipe.Name} Ice Cream";
         ViewBag.RecipeBundle = JsonConvert.SerializeObject(recipeBundle);
 
         return View();

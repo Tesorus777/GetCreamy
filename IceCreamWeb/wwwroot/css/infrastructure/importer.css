@@ -1,0 +1,47 @@
+﻿.import-lazy-container {
+position: relative;
+overflow: hidden;
+}
+
+    .import-lazy-img {
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .import-lazy-img:has(!img.import-loaded) {
+        filter: blur(10px);
+    }
+
+    .import-lazy-img:not(:has(img.import-loaded))::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        animation: blur-pulse 3s infinite;
+        background-color: hsla(0, 0%, 100%, 0);
+    }
+
+    .import-lazy-img img {
+        object-position: center;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 250ms ease-in-out;
+    }
+
+        .import-lazy-img img.import-loaded {
+            opacity: 1;
+        }
+
+@keyframes blur-pulse {
+    0% {
+        background-color: hsla(0, 0%, 100%, 0%);
+    }
+
+    50% {
+        background-color: hsla(0, 0%, 100%, 20%);
+    }
+
+    100% {
+        background-color: hsla(0, 0%, 100%, 0%);
+    }
+}

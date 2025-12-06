@@ -181,10 +181,14 @@ class ShoppingCart {
             [this._quartKey]: quarts
         };
         if (!this.Order.some(item => item[this._flavorKey] === flavorName)) {
+            // If the Order does not already contain the flavor, add it
             this.Order = this.Order.toSpliced(this.Order.length, 0, orderItem);
             this.UpdateState();
         } else {
-            this.UpdateOrder(flavorName, pints, quarts);
+            // If the Order does already contain the flavor, Update it
+            // Get the exact flavor from the order, add the incoming pints/quarts and submit that to UpdateOrder
+            let currentItem = this.Order.find(item => item[this._flavorKey] === flavorName);
+            this.UpdateOrder(flavorName, currentItem[this._pintKey] + pints, currentItem[this._quartKey] + quarts);
         }
     }
 
@@ -204,8 +208,8 @@ class ShoppingCart {
     RemoveFromOrder(flavorName = "") {
         // Default mode verfies there is any quantity of all flavors
         this.Order = this.Order.filter((item) => {
-            // Keep items that are not flavorName and have a quantity > 0
-            return (item[this._flavorKey] !== flavorName && item[this._pintKey] > 0 && item[this._quartKey] > 0);
+            // Keep items that are not flavorName and have a pint or quart quantity > 0
+            return (item[this._flavorKey] !== flavorName && (item[this._pintKey] > 0 || item[this._quartKey] > 0));
         });
         this.UpdateState();
     }
@@ -232,6 +236,16 @@ class ShoppingCart {
         // 2) Load low-res image
 
         // 3) Initialize price based on Order quantity
+    }
+
+    GetPintsByFlavor(flavorName) {
+        let flavorItem = this.Order.find(item => item[this._flavorKey] === flavorName);
+        return flavorItem !== undefined ? flavorItem[this._pintKey] : 0;
+    }
+
+    GetQuartsByFlavor(flavorName) {
+        let flavorItem = this.Order.find(item => item[this._flavorKey] === flavorName);
+        return flavorItem !== undefined ? flavorItem[this._quartKey] : 0;
     }
 
     // #endregion Extra Methods

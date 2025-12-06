@@ -110,6 +110,14 @@ namespace IceCream.DataAccessLibrary.DataAccess
                 Bundler: new RecipeBundler()
             );
 
+            output.Recipe.Normalize();
+
+            foreach (var item in output.Ingredients)
+            {
+                // Set plurality
+                item.Normalize();
+            }
+
             return output;
         }
 
@@ -291,7 +299,7 @@ namespace IceCream.DataAccessLibrary.DataAccess
             List<InventoryModel> output = new();
             output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
                 ConnectionString: _opt.ConnectionString,
-                Parameter: new { RecipeName = recipeName },
+                Parameter: new { Name = recipeName },
                 Command: _opt.Options.Inventory.Other["SelectOne"]
             );
             return output;

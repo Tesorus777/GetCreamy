@@ -23,10 +23,11 @@ namespace IceCream.DataAccessLibrary.Internal.Bundlers
         public void BundleClass(GridReader reader)
         {
             ((RecipeBundleModel)Bundled).Recipe = reader.Read<RecipeModel>().FirstOrDefault();
-            ((RecipeBundleModel)Bundled).Ingredients = reader.Read<IngredientModel>().ToList();
+            ((RecipeBundleModel)Bundled).Ingredients = reader.Read<RecipeIngredientModel>().ToList();
             ((RecipeBundleModel)Bundled).Steps = reader.Read<StepModel>().ToList();
-            ((RecipeBundleModel)Bundled).Photos = reader.Read<PhotoModel>().ToList();
+            ((RecipeBundleModel)Bundled).Photos = reader.Read<RecipePhotoModel>().ToList();
             ((RecipeBundleModel)Bundled).Notes = reader.Read<RecipeNotesModel>().ToList();
+            ((RecipeBundleModel)Bundled).Inventory = reader.Read<InventoryModel>().ToList();
         }
     }
 }

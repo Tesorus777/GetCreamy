@@ -13,5 +13,6 @@ namespace IceCream.DataLibrary.DataModels.Recipe
         public string RecipeName { get; set; }
         public bool PintorQuart { get; set; }
         public decimal Price { get; set; }
+        public string Stock { get; set; }
     }
 }
