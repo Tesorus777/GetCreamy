@@ -17,21 +17,24 @@ const blogData = blog;
 
 function LoadBlog() {
     for (const project of blogData) {
-        let container = document.createElement("div");
-        let name = document.createElement("h3");
-        let description = document.createElement("p");
-        // Classes
-        container.classList.add("home-blog-project-container");
-        name.classList.add("home-blog-name");
-        description.classList.add("home-blog-description");
-        // Information
-        name.innerText = project.Name;
-        description.innerHTML = project.Description
-        // Append
-        container.append(name, description);
-        blogBody.append(container);
-    }
-}
+        blogBody.append(createElement({
+            tag: "div",
+            classList: ["home-blog-project-container"],
+            children: [
+                {
+                    tag: "h3",
+                    innerText: project.Name,
+                    classList: ["home-blog-name"]
+                },
+                {
+                    tag: "p",
+                    innerHTML: project.Description,
+                    classList: ["home-blog-description"]
+                }
+            ]
+        }));
+    };
+};
 
 // #endregion Load Data
 

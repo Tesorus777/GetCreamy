@@ -51,62 +51,47 @@ async function RecipeCardBuilder(sortBy) {
     let recipeList = await API.Get(`IceCream/Recipe/${recipeCalls}/${viewNum}`);
     let cards = [];
     for await (const recipe of recipeList) {
-        // #region Card Creation
-        let containerCard = document.createElement("a");
-        //let recipeLink = document.createElement("a");
-        let backCard = document.createElement("div");
-        let frontCard = document.createElement("div");
-        // Classes
-        containerCard.classList.add("recipe-card");
-        backCard.classList.add("recipe-back");
-        frontCard.classList.add("recipe-front");
-        // #endregion
-
-        // #region Link
-        containerCard.href = `/Recipe/${recipe.Name}`;
-        // #endregion
-
-        // #region Back Card
-        let flavor = document.createElement("h3");
-        //let rating = document.createElement("div");
-        let description = document.createElement("div");
-        // Classes
-        flavor.classList.add("recipe-flavor");
-        //rating.classList.add("recipe-rating");
-        description.classList.add("recipe-description");
-        // Information
-        flavor.innerText = recipe.Name;
-        //ratingBuilder.Build(rating, recipe.Rating);
-        description.innerText = recipe.Description;
+        // Create front and rear cards
+        let backCard = {
+            tag: "div",
+            classList: ["recipe-back"],
+            children: [
+                {
+                    // Flavor
+                    tag: "h3",
+                    innerText: recipe.Name,
+                    classList: ["recipe-flavor"]
+                },
+                {
+                    // Description
+                    tag: "div",
+                    innerText: recipe.Description,
+                    classList: ["recipe-description"]
+                }
+            ]
+        }
+        let frontCard = {
+            tag: "div",
+            classList: ["recipe-front"],
+            childNodes: [importer.Import(recipe.Photo).Object]
+        }
+        // Create container card
+        let containerCard = createElement({
+            tag: "a",
+            classList: ["recipe-card"],
+            href: `/Recipe/${recipe.Name}`,
+            children: [backCard, frontCard],
+            events: [{
+                type: "touchstart",
+                handler: ((event) => {
+                    totalCards.forEach(card => {
+                        card.classList.remove(recipeListMobileHoverClass);
+                    });
+                    containerCard.classList.add(recipeListMobileHoverClass);
+                })
+            }]
+        });
         // Append
-        backCard.append(flavor, description);
-        // #endregion
-
-        // #region Front Card
-
-        // importer needs to create an Id or some sort of tag in order to identify elements on the screen and replace them when the new image has loaded
-        // this seems like a timing issue as if the image loads before the element is on screen, then what?
-
-        let img = importer.Import(recipe.Photo).Object;
-
-        // Front Classes
-
-        // Information
-
-        // Append
-        frontCard.append(img);
-        // #endregion
-
-        // Container Card mobile hover
-        containerCard.addEventListener("touchstart", () => {
-            totalCards.forEach(card => {
-                card.classList.remove(recipeListMobileHoverClass);
-            });
-            containerCard.classList.add(recipeListMobileHoverClass);
-        })
-
-        // Append front and back to card
-        containerCard.append(backCard, frontCard);
         recipeBody.append(containerCard);
         cards.push(containerCard);
         totalCards.push(containerCard);

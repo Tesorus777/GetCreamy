@@ -24,5 +24,5 @@ find . -type f \( \
 
     # --- Thumbnail version ---
     echo "Recreating thumbnail: $thumb"
-    ffmpeg -y -i "$img" -vf scale=8:-1 "$thumb"
+    ffmpeg -y -i "$img" -vf scale=80:-1 "$thumb"
 done

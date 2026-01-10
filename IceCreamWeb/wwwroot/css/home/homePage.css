@@ -195,10 +195,12 @@ div.suggestion-input-counter-container {
 label:has(input.suggestion-marketing-input) {
     grid-column: 2;
     grid-row: 4;
+    width: fit-content;
     text-align: right;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    justify-self: flex-end;
     gap: 0.25em;
     padding-right: 1em;
 }

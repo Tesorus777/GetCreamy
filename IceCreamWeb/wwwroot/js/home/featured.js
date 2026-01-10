@@ -40,16 +40,12 @@ function LoadFeatured() {
     featuredName.innerText = `Featured: ${featuredRecipe.Name}`;
     //ratingBuilder.Build(featuredRating, featuredRecipe.Rating);
     featuredDescription.innerText = featuredRecipe.Description;
-}
-
-function LoadImage() {
-    let img = importer.Import(featuredRecipe.Photo).Object;
-    featuredImage.append(img);
+    // Image
+    featuredImage.append(importer.Import(featuredRecipe.Photo).Object);
 }
 
 // #endregion Load Data
 
 (() => {
     LoadFeatured();
-    LoadImage();
 })();

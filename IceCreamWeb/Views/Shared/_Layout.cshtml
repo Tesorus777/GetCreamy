@@ -59,50 +59,41 @@
         </div>
     </div>
 
-    <dialog id="CartDialog" class="cart-dialog">
+    <dialog id="CartDialog" closedby="any" class="cart-dialog">
 
-        <div class="cart-details">
+        <div class="cart-body-container">
 
-            <div class="cart-details-header">
+            <div class="cart-header">
                 <h2>Shopping Cart</h2>
-                <h2 id="CartDetailsCount">Items</h2>
+                <div class ="cart-close-container">
+                    <svg id="CartClose" viewBox="0 0 16 16" class="cart-close-icon">
+                        <path d="M 15.569 13.014 L 10.549 8 L 15.565 2.983 C 16.143 2.407 16.143 1.478 15.567 0.9 L 15.1 0.434 C 14.827 0.153 14.452 0 14.058 0 C 14.056 0 14.056 0 14.056 0 C 13.663 0 13.292 0.155 13.016 0.433 L 8 5.452 L 2.982 0.438 C 2.406 -0.139 1.48 -0.142 0.901 0.436 L 0.435 0.897 C 0.155 1.173 0 1.548 0 1.941 C 0 2.334 0.156 2.708 0.432 2.984 L 5.452 8 L 0.437 13.016 C -0.142 13.593 -0.142 14.52 0.435 15.101 L 0.9 15.566 C 1.177 15.847 1.55 16 1.944 16 C 2.336 16 2.711 15.844 2.987 15.567 L 8.001 10.549 L 13.017 15.561 C 13.301 15.848 13.68 15.993 14.06 15.993 C 14.434 15.993 14.813 15.85 15.1 15.565 L 15.566 15.1 C 15.847 14.825 16 14.451 16 14.058 C 16.002 13.663 15.847 13.291 15.57 13.014 L 15.569 13.014 Z"></path>
+                    </svg>
+                </div>
             </div>
 
-            <div class="cart-details-body">
-                <div>
-                    <h3>Flavors</h3>
+            <div class="cart-details-container">
+                <div class="cart-details-header">
+                    <h3>Flavor</h3>
                     <h3>Quantity</h3>
                     <h3>Price</h3>
                 </div>
-                <div id="cart-flavor-container"></div>
+                <div id="CartDetailsBody" class="cart-details-body"></div>
             </div>
 
         </div>
 
 
-        <div class="cart-summary">
+        <div class="cart-summary-container">
 
-            <div class="cart-summary-header">
-                <h2>Order Summary</h2>
-            </div>
+            <h2 id="CartDetailsCount">Item Count: </h2>
 
-            <div class="cart-summary-body">
-                <div>
-                    <span id="CartBodyCount">Items Subtotal</span>
-                    <span id="CartSubtotal">$</span>
-                </div>
-                <div>
-                    <span>Delivery Fee</span>
-                    <span id="CartDeliveryFee">$</span>
-                </div>
-                <div>
-                    <span>Total Cost</span>
-                    <span id="CartTotalCost">$</span>
-                </div>
-                <a asp-area="" asp-controller="Home" asp-action="Checkout">Checkout</a>
-            </div>
+            <h2 id="CartSubtotalContainer"></h2>
+
+            <a asp-area="" asp-controller="Home" asp-action="Checkout" id="CartCheckout" class="cart-checkout">Checkout</a>
 
         </div>
+
     </dialog>
 
     <script type="text/javascript" src="/config/settings.js"></script>

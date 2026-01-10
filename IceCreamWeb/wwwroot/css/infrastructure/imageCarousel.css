@@ -66,8 +66,15 @@ svg.carousel-pagination-arrow, svg.carousel-pagination-circle {
         transform: translateY(0);
     }
 
+body:has(dialog[open]) svg.carousel-pagination-arrow, body:has(dialog[open]) svg.carousel-pagination-circle {
+    cursor: default;
+    fill: var(--accent-two-medium-light);
+    filter: none;
+    transform: none;
+}
+
 svg.carousel-pagination-active {
-    fill: var(--accent-two-medium-dim);
+    fill: var(--accent-two-medium-dim) !important;
 }
 
 
@@ -93,5 +100,18 @@ svg.carousel-pagination-active {
 /*@media (max-width: 500px) {
 
 }*/
+
+@media (hover: none) {
+    svg.carousel-pagination-arrow:hover, svg.carousel-pagination-circle:hover {
+        fill: var(--accent-two-medium-light);
+        filter: unset;
+        transform: none;
+    }
+
+    svg.carousel-pagination-arrow:active, svg.carousel-pagination-circle:active {
+        fill: var(--accent-two-medium-dim);
+        transform: none;
+    }
+}
 
 /* #endregion Media Queries */

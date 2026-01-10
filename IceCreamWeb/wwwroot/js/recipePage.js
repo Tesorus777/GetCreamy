@@ -21,8 +21,8 @@ const quart = inventory.filter(i => i.PintorQuart == 1)[0];
 // if > 20 => "in stock"
 // if > 0 => "number available"
 // if 0 => out of stock
-const [pintDisplayPrice, maxPintInput, pintEnable] = FormatPrice(pint);
-const [quartDisplayPrice, maxQuartInput, quartEnable] = FormatPrice(quart);
+const [pintDisplayPrice, initialPintValue, maxPintInput, pintEnable] = FormatPrice(pint);
+const [quartDisplayPrice, initialQuartValue, maxQuartInput, quartEnable] = FormatPrice(quart);
 
 // Image Carousel
 let imageCarousel = new Carousel("../lib/images/recipe", photos, `div#RecipeImageContainer`, true, true);
@@ -100,6 +100,7 @@ function LoadRecipeInfo() {
     // Recipe cart inputs
     // Pint
     recipePintStock.innerText = `Pints:\t${pintDisplayPrice}`;
+    pintInput.value = initialPintValue;
     pintInput.max = maxPintInput;
     pintMinus.disabled = !pintEnable;
     pintInput.disabled = !pintEnable;
@@ -107,6 +108,7 @@ function LoadRecipeInfo() {
     pintAddToCart.disabled = !pintEnable;
     // Quart
     recipeQuartStock.innerText = `Quarts:\t${quartDisplayPrice}`;
+    quartInput.value = initialQuartValue;
     quartInput.max = maxQuartInput;
     quartMinus.disabled = !quartEnable;
     quartInput.disabled = !quartEnable;
@@ -116,68 +118,88 @@ function LoadRecipeInfo() {
     // Ingredients
     ingredients.forEach(ingredient => {
         // Create Objects
-        let ingredientItem = document.createElement("li");
-        let checkbox = document.createElement("input");
-        let quantitySpan = document.createElement("span");
-        let nameSpan = document.createElement("span");
-        // Set Checkbox values
-        checkbox.type = "checkbox";
-        checkbox.name = ingredient.Text;
-        // Set Classes
-        checkbox.classList.add("recipe-single-checkbox");
-        ingredientItem.classList.add("recipe-single-ingredient");
-        // Set Info
-        quantitySpan.append(checkbox, `${ingredient.Quantity} ${ingredient.QuantityUnit}`);
-        nameSpan.innerText = ingredient.Text;
+        let checkbox = {
+            tag: "input",
+            type: "checkbox",
+            name: ingredient.Text,
+            classList: ["recipe-single-checkbox"]
+        };
+        let quantitySpan = {
+            tag: "span",
+            innerText: `${ingredient.Quantity} ${ingredient.QuantityUnit}`,
+            prepend: true,
+            children: [checkbox]
+        };
+        let nameSpan = {
+            tag: "span",
+            innerText: ingredient.Text
+        };
+        let ingredientItem = {
+            tag: "li",
+            classList: ["recipe-single-ingredient"],
+            children: [quantitySpan, nameSpan]
+        };
         // Append
-        ingredientItem.append(quantitySpan, nameSpan);
-        ingredientsLocation.append(ingredientItem);
+        ingredientsLocation.append(createElement(ingredientItem));
     });
     // Steps
     steps.forEach(step => {
         // Create Objects
-        let stepItem = document.createElement("li");
-        // Set Classes
-        stepItem.classList.add("recipe-single-step");
-        // Set Info
-        stepItem.innerText = step.Text;
+        let stepItem = {
+            tag: "li",
+            innerText: step.Text,
+            classList: ["recipe-single-step"]
+        };
         // Append
-        stepsLocation.append(stepItem);
+        stepsLocation.append(createElement(stepItem));
     });
     // Notes
     notes.forEach(note => {
         // Create Objects
-        let noteItem = document.createElement("li");
-        let noteBody = document.createElement("p");
-        let noteLabel = document.createElement("span");
-        // Set Classes
-        noteItem.classList.add("recipe-single-note");
-        // Set Info
-        noteLabel.innerText = `V${note.RecipeVersion}`;
-        noteBody.innerText = note.Note;
+        let noteLabel = {
+            tag: "span",
+            innerText: `V${note.RecipeVersion}`
+        };
+        let noteBody = {
+            tag: "p",
+            innerText: note.Note,
+            prepend: true,
+            children: [noteLabel]
+        };
+        let noteItem = {
+            tag: "li",
+            classList: ["recipe-single-note"],
+            children: [noteBody]
+        };
         // Append
-        noteBody.prepend(noteLabel);
-        noteItem.append(noteBody);
-        notesLocation.append(noteItem);
+        notesLocation.append(createElement(noteItem));
     });
 }
 
 function FormatPrice(input) {
     let displayText = "";
+    let inputValue = 1;
     let maxPurchaseInput = 0;
     let enable = true;
-    if (input.Stock === "out of stock") {
-        displayText = input.Stock;
-        maxPurchaseInput = 0;
+    try {
+        if (input.Stock === "out of stock") {
+            displayText = input.Stock;
+            inputValue = 0;
+            enable = false;
+        } else if (input.Stock === "in stock") {
+            displayText = `$${input.Price} each`;
+            maxPurchaseInput = 20;
+        } else {
+            displayText = `$${input.Price} each, ${input.Stock.replace(input.Stock.split(" ")[0], numberWords[input.Stock.split(" ")[0]])}`;
+            maxPurchaseInput = Number(input.Stock.split(" ")[0]);
+        }
+    } catch {
+        displayText = "out of stock";
+        inputValue = 0;
         enable = false;
-    } else if (input.Stock === "in stock") {
-        displayText = `$${input.Price} each`;
-        maxPurchaseInput = 20;
-    } else {
-        displayText = `$${input.Price} each, ${input.Stock.replace(input.Stock.split(" ")[0], numberWords[input.Stock.split(" ")[0]])}`;
-        maxPurchaseInput = Number(input.Stock.split(" ")[0]);
     }
-    return [displayText, maxPurchaseInput, enable];
+    
+    return [displayText, inputValue, maxPurchaseInput, enable];
 }
 
 function AddToCart(pints = 0, quarts = 0) {
@@ -187,8 +209,19 @@ function AddToCart(pints = 0, quarts = 0) {
     // Calculate how many pints/quarts can be added
     let pintsToAdd = allowedPints > pints ? pints : allowedPints;
     let quartsToAdd = allowedQuarts > quarts ? quarts : allowedQuarts;
+    // Create AddToOrder objects
+    let pintObj = {
+        Price: pint.Price,
+        Quantity: pintsToAdd,
+        MaxQuantity: maxPintInput
+    }
+    let quartObj = {
+        Price: quart.Price,
+        Quantity: quartsToAdd,
+        MaxQuantity: maxQuartInput
+    }
     // Add to cart
-    Cart.AddToOrder(recipe.Name, pintsToAdd, quartsToAdd);
+    Cart.AddToOrder(recipe.Name, photos[0], pintObj, quartObj);
 }
 
 (() => {

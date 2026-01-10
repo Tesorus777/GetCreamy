@@ -11,9 +11,22 @@ class ShoppingCart {
         this._importer = new Importer("../lib/images/recipe", true);
 
         // Screen Elements
-        this._cartDiv = document.querySelector(`li#CartIconContainer`);
-        this._cartDialog = document.querySelector(`dialog#CartDialog`);
-        console.log(this._cartDialog);
+        // Outside cart
+        this._mainHeader = querySelector(`header.main-header`);
+        this._mainDiv = querySelector(`div.main`);
+        this._cartDiv = querySelector(`li#CartIconContainer`);
+        // Cart
+        this._cartDialog = querySelector(`dialog#CartDialog`);
+        // Inside cart
+        this._cartCloseButton = querySelector(`svg#CartClose`);
+        this._cartDetailsBody = querySelector(`div#CartDetailsBody`);
+        this._cartDetailsCount = querySelector(`h2#CartDetailsCount`);
+        this._cartSubtotalContainer = querySelector(`h2#CartSubtotalContainer`);
+        this._checkoutButton = querySelector(`a#CartCheckout`);
+
+        // Custom Events
+        this._openCartEvent = new CustomEvent("OpenCart");
+        this._closeCartEvent = new CustomEvent("CloseCart");
 
         // Local Storage
         this._checkoutKey = "ShoppingCart";
@@ -22,10 +35,14 @@ class ShoppingCart {
             Order: []
         };
 
+        // Variables
+        this._mainHeaderScrollOffset = this._mainHeader.offsetHeight;
+
         // Order Keys
         this._flavorKey = "Flavor";
-        this._pintKey = "Pints";
-        this._quartKey = "Quarts";
+        this._photoKey = "Photo";
+        this._pintKey = "Pint";
+        this._quartKey = "Quart";
 
         // Icons
         this._cartClasses = ["cart-icon"];
@@ -48,9 +65,12 @@ class ShoppingCart {
         this._openCart = this.OpenCart.bind(this);
         this._closeCart = this.CloseCart.bind(this);
 
-        console.log(this._userId);
-        console.log(localStorage);
-        console.log(this._checkoutObj);
+        // Classes
+        this._infoRowClasses = ["cart-info-row"];
+        this._infoClasses = ["cart-info-container"];
+        this._quantityContainerClasses = ["cart-quantity-container"];
+        this._addToCartClasses = ["cart-quantity"];
+        this._removeFromCartClasses = [];
 
         // #region Set Internally
         this.Initialize();
@@ -101,9 +121,16 @@ class ShoppingCart {
 
     get OrderLength() {
         return this.Order.reduce((acc, curr) => {
-            acc = acc + curr[this._pintKey] + curr[this._quartKey];
+            acc = acc + curr[this._pintKey].Quantity + curr[this._quartKey].Quantity;
             return acc;
         }, 0)
+    }
+
+    get OrderSubtotal() {
+        return this.Order.reduce((acc, curr) => {
+            acc = acc + (curr[this._pintKey].Quantity * curr[this._pintKey].Price) + (curr[this._quartKey].Quantity * curr[this._quartKey].Price);
+            return acc;
+        }, 0);
     }
 
     // #endregion Getters and Setters
@@ -122,130 +149,439 @@ class ShoppingCart {
             this.Order = [];
             this.CartId = this.UserId;
         }
-        // 2) Update State
+        // 2) Event listeners
+        this._cartDialog.addEventListener("close", this._closeCart);
+        this._cartCloseButton.addEventListener("click", this._closeCart);
+
+        // 3) Update State
         this.UpdateState();
+
+        // 4) For testing
+        //document.addEventListener("keydown", (event) => {
+        //    if (event.altKey && event.shiftKey && (event.key === "C" || event.key === "c")) {
+        //        this.OpenCart();
+        //    }
+        //});
     }
 
     // #region Screen Functions
 
-    async UpdateState() {
+    // #region Update Visuals
+
+    UpdateState() {
         this.UpdateSVG();
-        await this.UpdateCartContents();
+        this.UpdateCartContents();
+        this.UpdateItemCount();
+        this.UpdateSubtotal();
     }
 
     UpdateSVG() {
+        // Updates the cart SVG icon to show either empty or full
         // 1) If order length > 0, set to full-cart-svg else set to empty-cart-svg
-        let svgObj;
+        let svgObj = {
+            tagNS: "svg",
+            classList: this._cartClasses,
+            events: [{
+                type: "click",
+                handler: this._openCart
+            }]
+        };
         if (this.OrderLength > 0) {
-            svgObj = this.BuildSVG(this._cartClasses, this._shoppingFullCartPath, this._viewBoxFullCart, "click", this._openCart);
+            svgObj.viewBox = this._viewBoxFullCart;
+            svgObj.innerHTML = this._shoppingFullCartPath;
         } else {
-            svgObj = this.BuildSVG(this._cartClasses, this._shoppingCartPath, this._viewBoxCart, "click", this._openCart);
+            svgObj.viewBox = this._viewBoxCart;
+            svgObj.innerHTML = this._shoppingCartPath;
         }
         // 2) Clear previous and append
         this.CartDiv.innerHTML = "";
-        this.CartDiv.append(svgObj);
+        this.CartDiv.append(createElement(svgObj));
     }
 
-    async UpdateCartContents(flavorName, pints, quarts) {
-        // 1) Create cart item
-            // need: flavor name, image, text for pint and quart, - and + button, number box, price
-        // Fires off API calls to get thumbnails and loads
+    async UpdateCartContents() {
+        // Adds or Removes screen items based on cart contents
+        // 1) Add screen objects not yet on the screen (for page load/reload)
+        let cartRows = Array.from(this._cartDetailsBody.querySelectorAll(`div.cart-info-row`));
+        let cartItemsToAdd = this.Order.filter(cartItem => {
+            // return true for a cartItem that is not in cartRows
+            return !cartRows.includes((row) => {
+                return row.id.split("_")[1] === cartItem.Flavor;
+            });
+        });
+        cartItemsToAdd.forEach(item => this.BuildCartObject(item));
+        // 2) Remove screen objects no longer in cart
+        let cartItemsToRemove = cartRows.filter(row => {
+            // return true for a row (on screen) that is not in this.Order
+            return !this.Order.includes((cartItem) => {
+                return cartItem.Flavor === row.id.split("_")[1];
+            });
+        });
+        cartItemsToRemove.forEach(item => item.remove());
     }
 
-    UpdatePrice() {
-
+    UpdateItemCount() {
+        // Updates the cart item count
+        this._cartDetailsCount.innerText = `Item Count: ${this.OrderLength}`;
     }
+
+    UpdateSubtotal() {
+        // Updates the subtotal in the cart
+        this._cartSubtotalContainer.innerText = `Subtotal: $${this.OrderSubtotal}`;
+    }
+
+    InputHandler(orderItem) {
+        // Update Pint(s)/Quart(s) and price display
+        let pintInput = querySelector(`input#Cart_${orderItem[this._flavorKey]}_PintInput`);
+        querySelector(`h4#Cart_${orderItem[this._flavorKey]}_PintQuantity`).innerText = `Pint${pintInput.value > 1 || pintInput.value == 0 ? "s" : ""}`;
+        querySelector(`h4#Cart_${orderItem[this._flavorKey]}_PintPrice`).innerText = orderItem[this._pintKey].Price > 0 ? `$${orderItem[this._pintKey].Price * pintInput.value}` : `Out of Stock`;;
+
+        let quartInput = querySelector(`input#Cart_${orderItem[this._flavorKey]}_QuartInput`);
+        querySelector(`h4#Cart_${orderItem[this._flavorKey]}_QuartQuantity`).innerText = `Quart${quartInput.value > 1 || quartInput.value == 0 ? "s" : ""}`;
+        querySelector(`h4#Cart_${orderItem[this._flavorKey]}_QuartPrice`).innerText = orderItem[this._quartKey].Price > 0 ? `$${orderItem[this._quartKey].Price * quartInput.value}` : `Out of Stock`;;
+
+        // Update the order, item count, and subtotal
+        orderItem[this._pintKey].Quantity = pintInput.value;
+        orderItem[this._quartKey].Quantity = quartInput.value;
+        this.UpdateOrder(orderItem);
+        this.UpdateItemCount();
+        this.UpdateSubtotal();
+    }
+
+    // #endregion Update Visuals
+
+    // #region Open and Close
 
     OpenCart() {
-        // opens a dialog with the cart
-        // design pending (window pane or dropdown or dependant on mobile or what)
+        // 1) Dispatch open event
+        document.dispatchEvent(this._openCartEvent);
+        // 2) Open the cart
         this.CartDialog.show();
+        //// 3) Blur anything that has focus on it for some reason
+        //var tmp = document.createElement("input");
+        //document.body.appendChild(tmp);
+        //tmp.focus();
+        //document.body.removeChild(tmp);
+
     }
 
     CloseCart() {
+        // 1) Dispatch close event
+        document.dispatchEvent(this._closeCartEvent);
+        // 2) Close the cart
         this.CartDialog.close();
     }
 
-    
+    // #endregion Open and Close
 
     // #endregion Screen Functions
 
     // #region Local Storage Functions
 
-    AddToOrder(flavorName, pints, quarts) {
+    async AddToOrder(flavorName, photo, pintInfo, quartInfo) {
         // Add new order items. As a default, update existing items
         // Only UpdateSVG() after new item. UpdateOrder() always runs RemoveFromOrder()
         let orderItem = {
-            [this._flavorKey]: flavorName,
-            [this._pintKey]: pints,
-            [this._quartKey]: quarts
+            [this._flavorKey]: flavorName.replace(" ", "-"),
+            [this._photoKey]: photo,
+            [this._pintKey]: {
+                Price: pintInfo.Price,
+                Quantity: pintInfo.Quantity,
+                MaxQuantity: pintInfo.MaxQuantity
+            },
+            [this._quartKey]: {
+                Price: quartInfo.Price,
+                Quantity: quartInfo.Quantity,
+                MaxQuantity: quartInfo.MaxQuantity
+            }
         };
-        if (!this.Order.some(item => item[this._flavorKey] === flavorName)) {
+        if (!this.Order.some(item => item[this._flavorKey] === flavorName.replace(" ", "-"))) {
             // If the Order does not already contain the flavor, add it
             this.Order = this.Order.toSpliced(this.Order.length, 0, orderItem);
-            this.UpdateState();
+            this.Order = this.Order.sort((a, b) => {
+                if (a[this._flavorKey] < b[this._flavorKey]) {
+                    return -1;
+                }
+                if (a[this._flavorKey] > b[this._flavorKey]) {
+                    return 1;
+                }
+                return 0;
+            });
+            this.BuildCartObject(orderItem);
         } else {
             // If the Order does already contain the flavor, Update it
             // Get the exact flavor from the order, add the incoming pints/quarts and submit that to UpdateOrder
-            let currentItem = this.Order.find(item => item[this._flavorKey] === flavorName);
-            this.UpdateOrder(flavorName, currentItem[this._pintKey] + pints, currentItem[this._quartKey] + quarts);
-        }
+            let currentItem = this.Order.find(item => item[this._flavorKey] === flavorName.replace(" ", "-"));
+            // Set updated pint info
+            currentItem[this._pintKey].Price = pintInfo.Price;
+            currentItem[this._pintKey].Quantity += pintInfo.Quantity;
+            currentItem[this._pintKey].MaxQuantity = pintInfo.MaxQuantity;
+            // Set updated quart info
+            currentItem[this._quartKey].Price = quartInfo.Price;
+            currentItem[this._quartKey].Quantity += Number(quartInfo.Quantity);
+            currentItem[this._quartKey].MaxQuantity = quartInfo.MaxQuantity;
+            // Update
+            this.UpdateOrder(currentItem);
+        };
+        this.UpdateState();
     }
 
-    UpdateOrder(flavorName, pints, quarts) {
+    UpdateOrder(updateItem) {
         // Update existing order items. As a default, remove any empty items
-        // Don't run UpdateSVG() here because this will always run RemoveFromOrder()
         this.Order = this.Order.map(item => {
-            if (item[this._flavorKey] === flavorName) {
-                item[this._pintKey] = pints;
-                item[this._quartKey] = quarts;
+            if (item[this._flavorKey] === updateItem[this._flavorKey]) {
+                // Pint info
+                item[this._pintKey].Price = updateItem[this._pintKey].Price;
+                item[this._pintKey].Quantity = Number(updateItem[this._pintKey].Quantity);
+                item[this._pintKey].MaxQuantity = updateItem[this._pintKey].MaxQuantity;
+                // Quart info
+                item[this._quartKey].Price = updateItem[this._quartKey].Price;
+                item[this._quartKey].Quantity = Number(updateItem[this._quartKey].Quantity);
+                item[this._quartKey].MaxQuantity = updateItem[this._quartKey].MaxQuantity;
             }
             return item;
         });
-        this.RemoveFromOrder();
     }
 
     RemoveFromOrder(flavorName = "") {
         // Default mode verfies there is any quantity of all flavors
         this.Order = this.Order.filter((item) => {
             // Keep items that are not flavorName and have a pint or quart quantity > 0
-            return (item[this._flavorKey] !== flavorName && (item[this._pintKey] > 0 || item[this._quartKey] > 0));
+                // Logic to remove empty flavors from order: && (item[this._pintKey].Quantity > 0 || item[this._quartKey].Quantity > 0)
+            return (item[this._flavorKey] !== flavorName.replace(" ", "-"));
         });
         this.UpdateState();
     }
+
     // #endregion Local Storage Functions
 
 
     // #region Extra Methods
 
-    BuildSVG(classes, path, viewBox, eventType = null, eventFunction = null, attributes = []) {
-        let svgObj = document.createElementNS(this._xmlns, 'svg');
-        svgObj.setAttribute("viewBox", viewBox);
-        for (const attr of attributes) {
-            svgObj.setAttribute(`${attr.Type}`, `${attr.Value}`);
+    BuildCartObject(orderItem) {
+        // Build DOM tree from inside -> out
+        // 1) Build info
+        // Flavor info
+        let flavorThumbnail = this._importer.ImportThumbnail(orderItem[this._photoKey]).Object;
+        let flavorName = {
+            tag: "h3",
+            innerText: orderItem[this._flavorKey].replace("-", " ")
+        };
+        let pintPriceLabel = {
+            tag: "h4",
+            innerText: orderItem[this._pintKey].Price > 0 ? `Pints: $${orderItem[this._pintKey].Price} each` : `Pints: Out of Stock`
+        };
+        let quartPriceLabel = {
+            tag: "h4",
+            innerText: orderItem[this._quartKey].Price > 0 ? `Quarts: $${orderItem[this._quartKey].Price} each` : `Quarts: Out of Stock`
         }
-        svgObj.classList.add(...classes);
-        svgObj.innerHTML = path;
-        svgObj.addEventListener(eventType, eventFunction, true);
-        return svgObj;
-    }
+        // Quantity info
+        // Pint
+        let pintLabel = {
+            tag: "h4",
+            id: `Cart_${orderItem[this._flavorKey]}_PintQuantity`,
+            innerText: `Pint${orderItem[this._pintKey].Quantity > 1 || orderItem[this._pintKey].Quantity == 0 ? "s" : ""}`
+        };
+        let pintInput = {
+            tag: "input",
+            id: `Cart_${orderItem[this._flavorKey]}_PintInput`,
+            type: "number",
+            classList: [...this._addToCartClasses],
+            min: 0,
+            max: orderItem[this._pintKey].MaxQuantity,
+            value: orderItem[this._pintKey].Quantity,
+            disabled: orderItem[this._pintKey].MaxQuantity > 0 ? false : true,
+            events: [{
+                type: "change",
+                handler: (() => {
+                    this.InputHandler(orderItem);
+                }),
+                capture: true
+            }]
+        };
+        let pintMinusButton = {
+            tag: "button",
+            id: `Cart_${orderItem[this._flavorKey]}_PintMinus`,
+            classList: [...this._addToCartClasses, "minus"],
+            disabled: orderItem[this._pintKey].MaxQuantity > 0 ? false : true,
+            children: [{
+                tag: "span",
+                innerText: "-"
+            }],
+            events: [{
+                type: "click",
+                handler: ((event) => {
+                    let input = event.currentTarget.nextSibling;
+                    if (input.value > 0) {
+                        input.value--;
+                        this.InputHandler(orderItem);
+                    }
+                }),
+                capture: true
+            }]
+        };
+        let pintPlusButton = {
+            tag: "button",
+            id: `Cart_${orderItem[this._flavorKey]}_PintPlus`,
+            classList: [...this._addToCartClasses, "plus"],
+            disabled: orderItem[this._pintKey].MaxQuantity > 0 ? false : true,
+            children: [{
+                tag: "span",
+                innerText: "+"
+            }],
+            events: [{
+                type: "click",
+                handler: ((event) => {
+                    let input = event.currentTarget.previousSibling;
+                    if (input.value < input.max) {
+                        input.value++;
+                        this.InputHandler(orderItem);
+                    }
+                }),
+                capture: true
+            }]
+        };
+        let pintQuantityContainer = {
+            tag: "div",
+            classList: [...this._quantityContainerClasses],
+            children: [pintMinusButton, pintInput, pintPlusButton]
+        };
+        // Quart
+        let quartLabel = {
+            tag: "h4",
+            id: `Cart_${orderItem[this._flavorKey]}_QuartQuantity`,
+            innerText: `Quart${orderItem[this._quartKey].Quantity > 1 || orderItem[this._quartKey].Quantity == 0 ? "s" : ""}`
+        };
+        let quartInput = {
+            tag: "input",
+            id: `Cart_${orderItem[this._flavorKey]}_QuartInput`,
+            type: "number",
+            classList: [...this._addToCartClasses],
+            min: 0,
+            max: orderItem[this._quartKey].MaxQuantity,
+            value: orderItem[this._quartKey].Quantity,
+            disabled: orderItem[this._quartKey].MaxQuantity > 0 ? false : true,
+            events: [{
+                type: "change",
+                handler: (() => {
+                    this.InputHandler(orderItem);
+                }),
+                capture: true
+            }]
+        };
+        let quartMinusButton = {
+            tag: "button",
+            id: `Cart_${orderItem[this._flavorKey]}_QuartMinus`,
+            classList: [...this._addToCartClasses, "minus"],
+            disabled: orderItem[this._quartKey].MaxQuantity > 0 ? false : true,
+            children: [{
+                tag: "span",
+                innerText: "-"
+            }],
+            events: [{
+                type: "click",
+                handler: ((event) => {
+                    let input = event.currentTarget.nextSibling;
+                    if (input.value > 0) {
+                        input.value--;
+                        this.InputHandler(orderItem);
+                    }
+                }),
+                capture: true
+            }]
+        };
+        let quartPlusButton = {
+            tag: "button",
+            id: `Cart_${orderItem[this._flavorKey]}_QuartPlus`,
+            classList: [...this._addToCartClasses, "plus"],
+            disabled: orderItem[this._quartKey].MaxQuantity > 0 ? false : true,
+            children: [{
+                tag: "span",
+                innerText: "+"
+            }],
+            events: [{
+                type: "click",
+                handler: ((event) => {
+                    let input = event.currentTarget.previousSibling;
+                    if (input.value < input.max) {
+                        input.value++;
+                        this.InputHandler(orderItem);
+                    }
+                }),
+                capture: true
+            }]
+        };
+        let quartQuantityContainer = {
+            tag: "div",
+            classList: [...this._quantityContainerClasses],
+            children: [quartMinusButton, quartInput, quartPlusButton]
+        };
+        // Price info
+        let pintPrice = {
+            tag: "h4",
+            id: `Cart_${orderItem[this._flavorKey]}_PintPrice`,
+            innerText: orderItem[this._pintKey].Price > 0 ? `$${orderItem[this._pintKey].Price * orderItem[this._pintKey].Quantity}` : `Out of Stock`
+        };
+        let quartPrice = {
+            tag: "h4",
+            id: `Cart_${orderItem[this._flavorKey]}_QuartPrice`,
+            innerText: orderItem[this._quartKey].Price > 0 ? `$${orderItem[this._quartKey].Price * orderItem[this._quartKey].Quantity}` : `Out of Stock`
+        };
+        // Remove button
+        let removeCartButton = {
+            tag: "h5",
+            id: `Cart_${orderItem[this._flavorKey]}_Remove`,
+            classList: [...this._removeFromCartClasses],
+            innerText: "Remove",
+            events: [{
+                type: "click",
+                handler: ((event) => {
+                    this.RemoveFromOrder(event.currentTarget.id.split("_")[1]);
+                })
+            }]
+        };
+        // 2) Build containers
+        let flavorInfo = {
+            tag: "div",
+            classList: [...this._infoClasses, "flavor"],
+            children: [flavorName, pintPriceLabel, quartPriceLabel],
+            childNodes: [flavorThumbnail]
+        };
+        let quantityInfo = {
+            tag: "div",
+            classList: [...this._infoClasses, "quantity"],
+            children: [pintQuantityContainer, pintLabel, quartQuantityContainer, quartLabel]
+        };
+        let priceInfo = {
+            tag: "div",
+            classList: [...this._infoClasses, "price"],
+            children: [pintPrice, quartPrice]
+        };
+        let removeInfo = {
+            tag: "div",
+            classList: [...this._infoClasses, "remove"],
+            children: [removeCartButton]
+        };
+        let row = {
+            tag: "div",
+            id: `CartRow_${orderItem[this._flavorKey]}`,
+            classList: [...this._infoRowClasses],
+            children: [flavorInfo, quantityInfo, priceInfo, removeInfo]
+        };
+        // 4) Build
+        let domRow = createElement(row);
 
-    BuildCartObject() {
-        // 1) Build text and inputs
-
-        // 2) Load low-res image
-
-        // 3) Initialize price based on Order quantity
+        // Append to both the container and an array for easy access to stuff like the quart(s) and price control
+        this._cartDetailsBody.append(domRow);
     }
 
     GetPintsByFlavor(flavorName) {
         let flavorItem = this.Order.find(item => item[this._flavorKey] === flavorName);
-        return flavorItem !== undefined ? flavorItem[this._pintKey] : 0;
+        return flavorItem !== undefined ? flavorItem[this._pintKey].Quantity : 0;
     }
 
     GetQuartsByFlavor(flavorName) {
         let flavorItem = this.Order.find(item => item[this._flavorKey] === flavorName);
-        return flavorItem !== undefined ? flavorItem[this._quartKey] : 0;
+        return flavorItem !== undefined ? flavorItem[this._quartKey].Quantity : 0;
     }
 
     // #endregion Extra Methods
@@ -253,16 +589,67 @@ class ShoppingCart {
     // #region Test Methods
 
     TestAddToOrder() {
+        // order object reference
+        //let orderItem = {
+        //    [this._flavorKey]: flavorName.replace(" ", "_"),
+        //    [this._photoKey]: photo,
+        //    [this._pintKey]: {
+        //        Price: pintInfo.Price,
+        //        Quantity: pintInfo.Quantity,
+        //        MaxQuantity: pintInfo.MaxQuantity
+        //    },
+        //    [this._quartKey]: {
+        //        Price: quartInfo.Price,
+        //        Quantity: quartInfo.Quantity,
+        //        MaxQuantity: quartInfo.MaxQuantity
+        //    }
+        //};
+
         let testArr = [{
             [this._flavorKey]: "Vanilla",
-            [this._pintKey]: (Math.floor(Math.random() * 10) + 1),
-            [this._quartKey]: (Math.floor(Math.random() * 10) + 1)
+            [this._photoKey]: {
+                "RecipeName": "Vanilla",
+                "Folder": "Vanilla",
+                "FileName": "vanilla_ice_cream_test_batch.jpg",
+                "LowResFileName": "vanilla_ice_cream_test_batch-lowRes.jpg",
+                "ThumbnailFileName": "vanilla_ice_cream_test_batch-thumbnail.jpg",
+                "AltText": "Picture of vanilla ice cream being churned",
+                "SortOrder": 0
+            },
+            [this._pintKey]: {
+                Price: 12,
+                Quantity: (Math.floor(Math.random() * 10) + 1),
+                MaxQuantity: 7
+            },
+            [this._quartKey]: {
+                Price: 24,
+                Quantity: (Math.floor(Math.random() * 10) + 1),
+                MaxQuantity: 7
+            }
         }, {
             [this._flavorKey]: "Chocolate",
-            [this._pintKey]: (Math.floor(Math.random() * 10) + 1),
-            [this._quartKey]: (Math.floor(Math.random() * 10) + 1)
+            [this._photoKey]: {
+                "RecipeName": "Chocolate",
+                "Folder": "Chocolate",
+                "FileName": "chocolate_ice_cream.png",
+                "LowResFileName": "chocolate_ice_cream-lowRes.png",
+                "ThumbnailFileName": "chocolate_ice_cream-thumbnail.png",
+                "AltText": "Picture of chocolate ice cream",
+                "SortOrder": 0
+            },
+            [this._pintKey]: {
+                Price: 12,
+                Quantity: (Math.floor(Math.random() * 10) + 1),
+                MaxQuantity: 7
+            },
+            [this._quartKey]: {
+                Price: 24,
+                Quantity: (Math.floor(Math.random() * 10) + 1),
+                MaxQuantity: 7
+            }
         }];
         testArr.forEach(item => {
+            // Inputs: flavor name, pint object, quart object
             this.AddToOrder(item[this._flavorKey], item[this._pintKey], item[this._quartKey]);
         });
         console.log(this.Order);
@@ -270,32 +657,26 @@ class ShoppingCart {
 
     TestUpdateOrder() {
         let testArr = [{
-            [this._flavorKey]: "Vanilla",
-            [this._pintKey]: (Math.floor(Math.random() * 10) + 1),
-            [this._quartKey]: (Math.floor(Math.random() * 10) + 1)
+            FlavorName: "Vanilla",
+            Pints: (Math.floor(Math.random() * 10) + 1),
+            Quarts: (Math.floor(Math.random() * 10) + 1)
         }, {
-            [this._flavorKey]: "Chocolate",
-            [this._pintKey]: (Math.floor(Math.random() * 10) + 1),
-            [this._quartKey]: (Math.floor(Math.random() * 10) + 1)
+            FlavorName: "Chocolate",
+            Pints: (Math.floor(Math.random() * 10) + 1),
+            Quarts: (Math.floor(Math.random() * 10) + 1)
         }];
         testArr.forEach(item => {
-            this.UpdateOrder(item[this._flavorKey], item[this._pintKey], item[this._quartKey]);
+            // Inputs: flavor name, number of pints, number of quarts
+            this.UpdateOrder(item[FlavorName], item[Pints], item[Quarts]);
         });
         console.log(this.Order);
     }
 
     TestRemoveFromOrder() {
-        let testArr = [{
-            [this._flavorKey]: "Vanilla",
-            [this._pintKey]: 0,
-            [this._quartKey]: 0
-        }, {
-            [this._flavorKey]: "Chocolate",
-            [this._pintKey]: 0,
-            [this._quartKey]: 0
-        }];
+        let testArr = ["Vanilla", "Chocolate"];
         testArr.forEach(item => {
-            this.RemoveFromOrder(item[this._flavorKey]);
+            // Inputs: flavor name
+            this.RemoveFromOrder(item);
         });
         console.log(this.Order);
     }

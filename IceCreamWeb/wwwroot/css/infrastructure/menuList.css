@@ -20,7 +20,7 @@
     height: 100%;
     border-radius: 2em;
     aspect-ratio: 1;
-    overflow: hidden;
+    overflow: clip;
     z-index: 2;
 }
 

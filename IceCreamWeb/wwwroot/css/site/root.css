@@ -7,6 +7,8 @@
     --main-text: black;
     --shadow-color: darkgray;
     --invalid-color: red;
+    --disabled-input: darkgray;
+    --disabled-button: hsl(195, 15%, 60%);
     /* HSL Naming Convention: "accent number"-saturation-lightness */
     /* Saturation: low (0-35), medium(36-65), high(66-100) */
     /* Lightness: dark(0-25), dim(25-50), light(51-75), bright(75-100) */

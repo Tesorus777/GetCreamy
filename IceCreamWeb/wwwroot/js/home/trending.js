@@ -49,24 +49,31 @@ async function LoadTrending() {
 }
 
 function BuildMenuObject(recipe) {
-    // Create Elements
-    let container = document.createElement("a");
-    let name = document.createElement("h3");
-    //let rating = document.createElement("div");
-    //let description = document.createElement("div");
-    // Link
-    container.href = `/Recipe/${recipe.Name}`;
-    // Classes
-    container.classList.add("home-trending-recipe");
-    name.classList.add("home-trending-recipe-name");
-    //rating.classList.add("home-trending-recipe-rating");
-    //description.classList.add("home-trending-recipe-description");
-    // Information
-    name.innerText = recipe.Name;
-    //ratingBuilder.Build(rating, recipe.Rating);
-    //description.innerText = recipe.Description;
-    // Append
-    container.append(name);
+    let container = createElement({
+        tag: "a",
+        href: `/Recipe/${recipe.Name}`,
+        classList: ["home-trending-recipe"],
+        children: [
+            {
+                // Name
+                tag: "h3",
+                innerText: recipe.Name,
+                classList: ["home-trending-recipe-name"]
+            }//,
+            //{
+            //    // Rating
+            //    tag: "div",
+            //    innerHTML: "", // was previously made by a deprecated function
+            //    classList: ["home-trending-recipe-rating"]
+            //},
+            //{
+            //    // Description
+            //    tag: "div",
+            //    innerText: recipe.Description,
+            //    classList: ["home-trending-recipe-description"]
+            //}
+        ]
+    });
     // Return
     return container;
 }
