@@ -26,7 +26,7 @@ namespace IceCream.DataAccessLibrary.Internal.Bundlers
             ((RecipeBundleModel)Bundled).Ingredients = reader.Read<RecipeIngredientModel>().ToList();
             ((RecipeBundleModel)Bundled).Steps = reader.Read<StepModel>().ToList();
             ((RecipeBundleModel)Bundled).Photos = reader.Read<RecipePhotoModel>().ToList();
-            ((RecipeBundleModel)Bundled).Notes = reader.Read<RecipeNotesModel>().ToList();
+            //((RecipeBundleModel)Bundled).Notes = reader.Read<RecipeNotesModel>().ToList();
             ((RecipeBundleModel)Bundled).Inventory = reader.Read<InventoryModel>().ToList();
         }
     }

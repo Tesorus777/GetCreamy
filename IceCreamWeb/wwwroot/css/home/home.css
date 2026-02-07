@@ -134,36 +134,22 @@ form.home-suggestion-form {
     gap: 1em 1.5em;
 }
 
-    form.home-suggestion-form input[type="checkbox"] {
-        width: 1.2em;
-        height: 1.2em;
-    }
-
     form.home-suggestion-form input[type="submit"] {
+        position: relative;
         grid-row: 5;
         grid-column: 2;
         justify-self: end;
         margin-right: 2em;
+
+        anchor-name: --suggestion-submit;
     }
 
-input.suggestion-input, textarea.suggestion-input {
-    font-size: 0.85rem;
-    padding: 0.5em 0.75em;
-    border: 1px solid var(--accent-two-medium-light);
-    border-radius: 0.5em;
-    box-shadow: -0.15em 0.15em 0.2em var(--shadow-color);
-}
-
-    input.suggestion-input.hp-important {
-        display: none;
-    }
-
-    input.suggestion-input::placeholder, textarea.suggestion-input::placeholder {
-        font-style: italic;
-    }
-
-.suggestion-input:user-invalid {
-    border-color: var(--invalid-color);
+div.suggestion-loader {
+    position-anchor: --suggestion-submit;
+    position-visibility: always;
+    position-area: left center;
+    width: anchor-size(width);
+    margin-right: 0.25em;
 }
 
 input#SuggestionFlavor {

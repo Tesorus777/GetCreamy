@@ -1,0 +1,137 @@
+﻿@{
+    ViewData["Title"] = "Cart";
+
+    string emailMaximum = "200";
+    string emailInvalid = "Please enter a valid email adderss.";
+
+    string firstNamePattern = @"[\p{L}\p{M}]+(?:[\s\-][\p{L}\p{M}]+)*";
+    string firstNameMinimum = "1";
+    string firstNameMaximum = "50";
+    string firstNameInvalid = "Please enter your first name using only letters.";
+
+    string lastNamePattern = @"[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*";
+    string lastNameMinimum = "1";
+    string lastNameMaximum = "50";
+    string lastNameInvalid = "Please enter your last name using only letters.";
+
+    string telephonePattern = @"\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}";
+    string telephoneMinimum = "9";
+    string telephoneMaximum = "15";
+    string telephoneInvalid = "Please enter a valid phone number.";
+
+    string addressPattern = @"\d+\s+[\p{L}\p{M}\p{N}.'\-]+(?:\s+[\p{L}\p{M}\p{N}.'\-]+)*";
+    string addressMinimum = "1";
+    string addressMaximum = "100";
+    string addressInvalid = "Please enter a valid address. Do not include the apartment, suite, etc in this field.";
+
+    string addressTwoPattern = @"([Aa][Pp][Tt]|[Aa][Pp][Aa][Rr][Tt][Mm][Ee][Nn][Tt]|[Uu][Nn][Ii][Tt]|[Ss][Uu][Ii][Tt][Ee]|[Ss][Tt][Ee]|#)\s*[A-Za-z0-9\s\-]+";
+    string addressTwoMinimum = "0";
+    string addressTwoMaximum = "100";
+    string addressTwoInvalid = "Please enter a valid apartment, suite, etc.";
+
+    string cityPattern = @"[\p{L}\p{M}.'\-]+(?:\s+[\p{L}\p{M}.'\-]+)*";
+    string cityMinimum = "1";
+    string cityMaximum = "100";
+    string cityInvalid = "Please enter a valid city.";
+
+    string zipcodePattern = @"\d{5}(?:-\d{4})?";
+    string zipcodeMinimum = "5";
+    string zipcodeMaximum = "10";
+    string zipcodeInvalid = "Please enter a valid zipcode (ZIP and ZIP+4 are accepted).";
+
+    string specialInstructionsMaximum = "2500";
+    string specialInstructionsInvalid = "";
+
+    string checkoutDiscountMinimum = "8";
+    string checkoutDiscountMaximum = "50";
+    string checkoutDiscountInvalid = "";
+
+}
+
+@section StyleSheets {
+    <link rel="stylesheet" href="~/css/order/checkout.css" asp-append-version="true" />
+}
+
+<div id="CheckoutBody" class="checkout-body">
+    <div class="checkout-details">
+        <form id="ContactInformation" class="checkout-details-form" onsubmit="return false">
+            <h2 class="checkout-header contact">Contact Information</h2>
+            <input type="email" id="CheckoutEmail" class="checkout-input email" placeholder="Email" max="@emailMaximum" invalid-text="@emailInvalid" required />
+
+            <label class="checkout-marketing">Sign up for emails? <input type="checkbox" id="CheckoutMarketing" class="checkout-marketing-input"/></label>
+
+            <input type="text" id="CheckoutFirstName" class="checkout-input first-name" placeholder="First Name" pattern="@firstNamePattern" minlength="@firstNameMinimum" maxlength="@firstNameMaximum" invalid-text="@firstNameInvalid" required />
+            <input type="text" id="CheckoutLastName" class="checkout-input last-name" placeholder="Last Name" pattern="@lastNamePattern" minlength="@lastNameMinimum" maxlength="@lastNameMaximum" invalid-text="@lastNameInvalid" required />
+            <input type="tel" id="CheckoutTelephone" class="checkout-input telephone" placeholder="Telephone" pattern="@telephonePattern" minlength="@telephoneMinimum" maxlength="@telephoneMaximum" invalid-text="@telephoneInvalid" required />
+
+
+            <hr class="checkout-break" />
+
+            <h2 class="checkout-header shipping">Shipping Address</h2>
+            <input type="text" id="CheckoutAddressOne" class="checkout-input address-one" placeholder="Address" pattern="@addressPattern" minlength="@addressMinimum" maxlength="@addressMaximum" invalid-text="@addressInvalid" required />
+            <div id="GeoapifyAutofill" class="checkout-geoapify-autofill"></div>
+            <div class="geoapify-attribution">Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a></div>
+            <input type="text" id="CheckoutAddressTwo" class="checkout-input address-two" placeholder="Apartment, Suite, etc. (optional)" pattern="@addressTwoPattern" minlength="@addressTwoMinimum" maxlength="@addressTwoMaximum" invalid-text="@addressTwoInvalid" />
+            <input type="text" id="CheckoutCity" class="checkout-input city" placeholder="City" pattern="@cityPattern" minlength="@cityMinimum" maxlength="@cityMaximum" invalid-text="@cityInvalid" required />
+            <input type="text" id="CheckoutZipcode" class="checkout-input zipcode" placeholder="Zipcode" pattern="@zipcodePattern" minlength="@zipcodeMinimum" maxlength="@zipcodeMaximum" invalid-text="@zipcodeInvalid" required />
+
+            <div class="checkout-instructions-container">
+                <textarea id="CheckoutNotes" class="checkout-input special-instructions" placeholder="Special instructions" invalid-text="@specialInstructionsInvalid"></textarea>
+                <div class="instructions-input-counter-container">
+                    <span id="InstructionsCount">0</span>
+                    <span id="InstructionsDescriptionMaximum">/ @specialInstructionsMaximum</span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="checkout-separation"></div>
+
+    <div class="checkout-summary">
+        <div id="CheckoutCartSummary" class="checkout-order-container"></div>
+
+        <div id="CheckoutDiscrepancy" class="checkout-discrepancy-container"></div>
+
+        <form id="DiscountInformation" class="checkout-discount-container" onsubmit="return false">
+            <input type="text" id="CheckoutDiscountInput" class="checkout-input discount" placeholder="Discount Code" minlength="@checkoutDiscountMinimum" maxlength="@checkoutDiscountMaximum" invalid-text="@checkoutDiscountInvalid" />
+            <button type="button" id="CheckoutDiscountButton" class="checkout-discount-apply">Apply</button>
+        </form>
+
+        <hr class="checkout-break" />
+
+        <div class="checkout-price-container">
+            <h3 class="checkout-header">Subtotal</h3>
+            <h3 id="CheckoutSubtotal" class="checkout-header price"></h3>
+
+            <h3 class="checkout-header">Tax</h3>
+            <h3 id="CheckoutTax" class="checkout-header price"></h3>
+
+            <h3 class="checkout-header">Shipping</h3>
+            <h3 id="CheckoutShipping" class="checkout-header price"></h3>
+
+            <hr class="message-anchor checkout-break" />
+
+            <h3 class="checkout-header total">Total</h3>
+            <h3 id="CheckoutTotal" class="checkout-header price"></h3>
+        </div>
+
+        <div class="checkout-submit-container">
+            <h4 class="checkout-header payment">Payment is due in cash upon delivery</h4>
+
+            <input type="submit" id="CheckoutSubmit" class="checkout-submit" value="Place Order" />
+        </div>
+    </div>
+</div>
+
+<div id="AddressLoad" class="loader checkout-loader address"></div>
+<div id="ZipcodeLoad" class="loader checkout-loader zipcode"></div>
+
+<div id="DiscountLoad" class="loader checkout-loader discount"></div>
+
+<div id="CheckoutSubmitLoad" class="loader submit-loader"></div>
+
+<div id="CheckoutMessageContainer" class="checkout-message"></div>
+
+@section Scripts {
+    <script type="module" src="~/js/order/checkout.js" asp-append-version="true"></script>
+}

@@ -1,4 +1,4 @@
-﻿  using IceCream.DataAccessLibrary.DataAccess;
+﻿using IceCream.DataAccessLibrary.DataAccess;
 using IceCream.DataLibrary.DataModels.Recipe;
 using IceCream.DataLibrary.DataModels.User;
 using Microsoft.AspNetCore.Mvc;
@@ -21,67 +21,112 @@ namespace IceCreamAPI.Controllers
 
         #region Order
 
-        // To Do:
-            // 1) Verify Zipcode (for front end form validation)
-            // 2) Verify Referral code (for front end form validation)
-
         [HttpPost]
         [Route("Order")]
-        public OrderStatusModel OrderNew([FromBody] JObject data)
+        public OrderCreationModel OrderNew([FromBody] JObject data)
         {
+            // Input:
+            // data = {
+            // OrderDetails: { Order Model }
+            // CartDetails: [{ CartModel }, { Cart Model }, ... ]
+            // UserDetails: { User Information Model }
+            // };
+
             // 1) Create Output
-            OrderStatusModel output = new();
+            OrderCreationModel output = new();
+            output.Success = false; // default
 
             // 2) Parse Input
-            OrderModel orderDetails = data["OrderDetails"].ToObject<OrderModel>();
             List<CartModel> cartDetails = data["CartDetails"].ToObject<List<CartModel>>();
+            OrderModel orderDetails = data["OrderDetails"].ToObject<OrderModel>();
+            orderDetails.SetDefaults();
+            UserInformationModel userDetails = data["UserDetails"].ToObject<UserInformationModel>();
 
             // 3) Verify an order is allowed to be made
-                // Remove this white-listing code on full release
+            if (userDetails.UserId == Guid.Empty || orderDetails.UserId == Guid.Empty)
+            {
+                // If not coming from the checkout page with a valid UserId, do not permit order
+                output.Message = "Please allow first party browser cookies and order through the official page";
+                return output;
+            }
+            // Remove this white-listing code on full release -- need to do a default referral[0].MinimumOrderValue of 0 to preserve subsequent logic
             List<OrderReferralModel> referral = _user.OrderVerifyReferral(orderDetails.ReferralText);
             if (referral.Count() < 1)
             {
                 // If not a white-listed customer, not allowed to make an order
-                output.Success = false;
-                output.Message = "Sorry, but you are not able to order at this moment. Please try another time!";
+                output.Message = "Sorry, but we are unable to take your order at this moment.|Please try another time!";
                 return output;
             }
 
-            // 2) Verify there are items in the order and the entire order is available
+            // 2) Verify there are items in the order and at least some of the order is available
             if (cartDetails.Count() < 1)
             {
-                output.Success = false;
                 output.Message = "Please add some ice cream to your cart.";
                 return output;
             }
-            int inventoryCount = 0;
-            foreach (CartModel item in cartDetails)
-            {
-                inventoryCount += item.Pints + item.Quarts;
-            }
-            List<InventoryModel> availableCartInventory = _recipe.InventorySelectOrderItemsBulk(cartDetails);
-            if (inventoryCount > availableCartInventory.Count())
-            {
-                output.Success = false;
-                output.Message = "Sorry, but we are out of stock of one or more items from your order. Please verify your cart and try ordering again!";
-                return output;
-            }
 
-            // 3) Insert an order
-            // Will auto reject if a zipcode is invalid
-            output.Order = _user.OrderInsert(orderDetails);
-            if (output.Order == null || output.Order.Id == null)
+            // 3) Insert an order if inventory is available
+
+
+            List<InventoryModel> availableCartInventory = _recipe.InventorySelectOrderItemsBulk(cartDetails);
+            decimal availableCartValue = availableCartInventory.Sum(item => item.Price);
+            if (availableCartInventory.Count() > 0)
             {
-                output.Success = false;
-                output.Message = "Sorry, something went wrong. Please verify your order details and try again.";
+                if (availableCartValue >= referral[0].MinimumOrderValue)
+                {
+                    // Insert user information after everything is validated
+                    output.UserInformation = _user.UserInformationInsert(userDetails);
+                    // Will auto reject if
+                    // zipcode is invalid (verify this)
+                    // referral text is valid (verify this)
+                    output.Order = _user.OrderInsert(orderDetails);
+                } else
+                {
+                    // If the referral minimum value is not hit, cannot order with that code
+                    output.Message = $"Sorry, the minimum order value for this discount code is ${Math.Round(referral[0].MinimumOrderValue ?? 0.00M, 2)}.|Please add some more ice cream to your cart or try a different code!";
+                    return output;
+                }
             } else
             {
+                output.Message = "Sorry, nothing from your order is in stock!";
+            }
+
+            // 4) Check if order was created
+            if (output.Order == null || output.Order.Id == null)
+            {
+                output.Message = "Sorry, something went wrong.|Please verify your order details and try again.";
+            }
+            else
+            {
+                output.Success = true;
+                // Compare how many are in the order vs how many are in inventory
+                int cartTotal = 0;
+                foreach (CartModel item in cartDetails)
+                {
+                    cartTotal += item.Pints + item.Quarts;
+                }
+                if (cartTotal > availableCartInventory.Count())
+                {
+                    // if customer desires more items than what is available
+                    output.Message = "Sorry, but we are out of stock of one or more items from your order.|You will receive a confirmation email soon for your remaining items.";
+                }
+                else
+                {
+                    // else the availableCartInventory count is equal to cartTotal
+                    output.Message = "Your order is placed!|You should receive a confirmation email soon.";
+                }
                 // 4) Insert the availableCartInventory into the OrderContent table
                 output.OrderContent = _user.OrderContentInsertBulk(output.Order.Id, availableCartInventory);
-                output.Success = true;
-                output.Message = "Your order is placed! You should receive confirmation soon.";
+                // 5) Get the photos associated with the Order Content
+                List<RecipeNameTypeModel> photoInput = output.OrderContent.DistinctBy(c => c.RecipeName).Select(rn => new RecipeNameTypeModel
+                {
+                    RecipeName = rn.RecipeName
+                }).ToList();
+                output.OrderPhotos = _recipe.RecipePhotoSelectFirstsBulk(photoInput);
 
-                // 5) Delete the ordered items from the Inventory table
+                // 6) Get the order after content inserted for price info
+                output.Order = _user.OrderSelectOne(output.Order);
+                // 7) Delete the ordered items from the Inventory table
                 List<InventoryModel> deletedInventory = _recipe.InventoryDeleteOrderItemsBulk(cartDetails);
             }
 
@@ -92,14 +137,14 @@ namespace IceCreamAPI.Controllers
         [Route("VerifyReferral/{code}")]
         public OrderReferralModel GetOrderVerifyReferral(string code)
         {
-            return _user.OrderVerifyReferral(code).First();
+            return _user.OrderVerifyReferral(code).FirstOrDefault() ?? new OrderReferralModel();
         }
 
         [HttpGet]
         [Route("VerifyZipcode/{zipcode}")]
         public DeliveryZipcodeModel GetOrderVerifyZipcode(string zipcode)
         {
-            return _user.OrderVerifyZipcode(zipcode).First();
+            return _user.OrderVerifyZipcode(zipcode).FirstOrDefault() ?? new DeliveryZipcodeModel();
         }
 
         #endregion
@@ -118,7 +163,7 @@ namespace IceCreamAPI.Controllers
         #region Suggestions
 
         [HttpPost]
-        [Route("User/Suggestion")]
+        [Route("Suggestion")]
         public void UserSuggestionNew([FromBody] UserSuggestionModel input)
         {
             _user.UserSuggestionNew(input);
@@ -129,7 +174,7 @@ namespace IceCreamAPI.Controllers
         #region User Data
 
         [HttpGet]
-        [Route("User/New")]
+        [Route("New")]
         public UserModel GenerateNewUser()
         {
             return _user.UserGenerateNew();

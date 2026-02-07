@@ -1,15 +1,15 @@
 ﻿class APIFetcher {
     constructor(baseUrl) {
-        this.baseUrl = baseUrl;
+        this._baseUrl = baseUrl;
     }
 
     // #region Getters and Setters
 
     get BaseUrl() {
-        return this.baseUrl;
+        return this._baseUrl;
     }
     set BaseUrl(newBaseUrl) {
-        this.baseUrl = newBaseUrl;
+        this._baseUrl = newBaseUrl;
     }
 
     // #region Getters and Setters
@@ -19,7 +19,7 @@
     async PerformFetch(url, method, data = null) {
         let response;
         if (method === "GET") {
-            response = await fetch(url, {
+            response = await fetch(encodeURI(url), {
                 method: method,
                 mode: "cors",
                 cache: "default",
@@ -31,14 +31,14 @@
                 referrerPolicy: "no-referrer"
             });
         } else {
-            response = await fetch(url, {
+            response = await fetch(encodeURI(url), {
                 method: method,
                 mode: "cors",
                 cache: "default",
                 credentials: "omit",
                 headers: {
                     "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": this.baseUrl,
+                    "Access-Control-Allow-Origin": this._baseUrl,
                     "Access-Control-Allow-Credentials": true 
                 },
                 referrerPolicy: "no-referrer",
@@ -65,19 +65,28 @@
             let response = await this.PerformFetch(`${this.BaseUrl}/${urlExtension}`, "GET");
             let data = await response.json();
             let jsonData = JSON.parse(JSON.stringify(data));
-            return jsonData[0];
+            if (Object.prototype.toString.call(jsonData) == '[object Array]') {
+                // if the object is an array, return the first row of it
+                return jsonData[0];
+            } else {
+                // else, return the object
+                return jsonData;
+            }
         } catch (exception) {
             this.CatchException(urlExtension, "GET", {}, exception);
             return {};
         }
     }
 
-    async Post(urlExtension, data) {
+    async Post(urlExtension, inputData) {
         try {
-            await this.PerformFetch(`${this.BaseUrl}/${urlExtension}`, "POST", data);
-            return true;
+            const response = await this.PerformFetch(`${this.BaseUrl}/${urlExtension}`, "POST", inputData);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            return response;
         } catch(exception) {
-            this.CatchException(urlExtension, "POST", data, exception);
+            this.CatchException(urlExtension, "POST", inputData, exception);
             return false;
         }
     }
@@ -115,6 +124,77 @@
 
     // #endregion Methods
 
+}
+
+class GeoapifyFetcher extends APIFetcher {
+    constructor(baseUrl, apiKey, lang, limit, filter) {
+        //
+        super(baseUrl);
+        this._apiKey = apiKey;
+        this._lang = lang != null ? lang : "en";
+        this._limit = limit != null ? limit : 5;
+        // Coordinates must be formatted (1) bottom left to (2) top right
+        this._longitude1 = "-119.377441";
+        this._latitude1 = "33.525369";
+        this._longitude2 = "-117.537231";
+        this._latitude2 = "34.465806";
+        this._filter = filter != null ? filter : `rect:${this._longitude1},${this._latitude1},${this._longitude2},${this._latitude2}` // from ventura to huntington beach
+        this._format = "json";
+
+        //this._state = "CA";
+        //this._country = "United States of America";
+    }
+
+    // #region Getters and Setters
+    get ApiKey() {
+        return this._apiKey;
+    }
+    set ApiKey(newApiKey) {
+        this._apiKey = newApiKey;
+    }
+    get Language() {
+        return this._lang;
+    }
+    set Language(newLang) {
+        // 2-character ISO 639-1 language codes are supported
+        // https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+        this._lang = newLang;
+
+    }
+    get Limit() {
+        return this._limit;
+    }
+    set Limit(newLimit) {
+        this._limit = newLimit;
+    }
+    get Filter() {
+        return this._filter;
+    }
+    set Filter(newFilter) {
+        this._filter = newFilter;
+    }
+
+    get GeoCodeUrlExtension() {
+        return `&limit=${this.Limit}&lang=${this.Language}&filter=${this.Filter}&format=${this._format}&apiKey=${this.ApiKey}`;
+    }
+    // #endregion Getters and Setters
+
+
+    // #region Methods
+    async AutoComplete(searchText) {
+        // searchText == addressOne
+        searchText = searchText != null ? searchText : "";
+        if (searchText == null || searchText.length == 0) {
+            return [];
+        }
+        // 1) Build request url
+        let urlExtension = `geocode/autocomplete?text=${searchText}${this.GeoCodeUrlExtension}`;
+        let resultSet = await this.Get(urlExtension).then(result => {
+            return result.results;
+        });
+        return resultSet;
+    }
+    // #endregion Methods
 }
 class StorageClass {
     constructor(baseUrl) {
@@ -165,10 +245,10 @@ class StorageClass {
     }
 
     get Session() {
-
+        return window.sessionStorage;
     }
-    set Session(token) {
-
+    set Session(storage) {
+        window.sessionStorage = storage;
     }
 
     get LocalStorage() {
@@ -271,6 +351,22 @@ class StorageClass {
 
     // #region Session Storage Methods
 
+    NewSessionItem(key, value) {
+        this.Session.setItem(key, JSON.stringify(value));
+    }
+
+    GetSessionItem(key) {
+        return JSON.parse(this.Session.getItem(key));
+    }
+
+    RemoveSessionItem(key) {
+        this.Session.removeItem(key);
+    }
+
+    ClearSession() {
+        this.Session.clear();
+    }
+
     // #endregion Session Storage Methods
 
     // #region Local Storage Methods
@@ -300,4 +396,4 @@ class StorageClass {
 
 }
 
-export { APIFetcher, StorageClass };
+export { APIFetcher, GeoapifyFetcher, StorageClass };

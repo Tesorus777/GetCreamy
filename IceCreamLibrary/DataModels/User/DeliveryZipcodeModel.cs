@@ -11,5 +11,8 @@ namespace IceCream.DataLibrary.DataModels.User
     {
         public string Zipcode { get; set; }
         public string Name { get; set; }
+        public string County { get; set; }
+        public decimal TaxRate { get; set; }
+        public decimal ShippingCost { get; set; }
     }
 }

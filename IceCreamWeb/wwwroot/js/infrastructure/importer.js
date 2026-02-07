@@ -16,7 +16,7 @@
         // Set externally
         this._folderRoot = folderRoot;
         // Set internally
-        this._styleSheet = "/css/infrastructure/importer.css";
+        this._styleSheet = "/css/infrastructure/importer/importer.css";
         // Images
         this._imageTypes = ["png", "jpg", "jpeg", "gif"];
         this._lazyContainerClasses = ["import-lazy-container"];
@@ -123,7 +123,7 @@ export class Carousel extends Importer {
         this._rightArrowPath = `<path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>`;
 
         // Style sources
-        this._styleSheet = "/css/infrastructure/imageCarousel.css";
+        this._styleSheet = "/css/infrastructure/importer/imageCarousel.css";
         // Object arrays
         this._imageObjArray = [];
 
@@ -499,7 +499,7 @@ export class MenuList extends Importer {
         this._location = querySelector(selector);
         // #region Set Internally
         // Style Source
-        this._styleSheet = "/css/infrastructure/menuList.css";
+        this._styleSheet = "/css/infrastructure/importer/menuList.css";
         this._containerClasses = ["menuList-container"];
         // Objects
         this._menuList;

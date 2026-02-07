@@ -10,6 +10,8 @@ namespace IceCream.DataLibrary.DataModels.User
     public class OrderReferralModel : BaseModel
     {
         public string Text { get; set; }
-        public decimal DiscountPercent { get; set; }
+        public decimal? DiscountAmount { get; set; }
+        public decimal? MinimumOrderValue { get; set; }
+
     }
 }

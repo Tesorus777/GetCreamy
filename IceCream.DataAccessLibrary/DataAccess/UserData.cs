@@ -27,6 +27,17 @@ namespace IceCream.DataAccessLibrary.DataAccess
 
         #region Order
 
+        public OrderModel OrderSelectOne(OrderModel order)
+        {
+            OrderModel output = new();
+            output = _sqlCaller.ExecuteSelect<OrderModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: order,
+                Command: _opt.Options.Order.Other["SelectOne"]
+            ).FirstOrDefault();
+            return output;
+        }
+
         public OrderModel OrderInsert(OrderModel order)
         {
             // This is an insert despite having a return value because the Order Id is used later to insert Order Content
@@ -35,7 +46,7 @@ namespace IceCream.DataAccessLibrary.DataAccess
                 ConnectionString: _opt.ConnectionString,
                 Parameter: order,
                 Command: _opt.Options.Order.Insert
-            ).First();
+            ).FirstOrDefault();
             return output;
         }
 
@@ -53,7 +64,7 @@ namespace IceCream.DataAccessLibrary.DataAccess
             List<DeliveryZipcodeModel> output = new();
             output = _sqlCaller.ExecuteSelect<DeliveryZipcodeModel, dynamic>(
                 ConnectionString: _opt.ConnectionString,
-                Parameter: new { Zipcode = zipcode },
+                Parameter: new { Zipcode = zipcode.FirstFromSplit('-') },
                 Command: _opt.Options.Order.Other["VerifyZipcode"]
             );
             return output;
@@ -169,6 +180,18 @@ namespace IceCream.DataAccessLibrary.DataAccess
             );
             // 3) Return New User
             return newUser;
+        }
+
+        public UserInformationModel UserInformationInsert(UserInformationModel input)
+        {
+            input.Normalize();
+            UserInformationModel output = new();
+            output = _sqlCaller.ExecuteSelect<UserInformationModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: input,
+                Command: _opt.Options.UserInfo.Insert
+            ).FirstOrDefault();
+            return output;
         }
 
         public void UserView(UserViewModel input)

@@ -11,6 +11,8 @@ namespace IceCream.DataLibrary.Internal
     {
         public static DataTable ToDataTable<T>(this List<T> data, string tableName)
         {
+            // NOTE: When building a SQL Table Valued Parameter, PRESERVE THE PROPERTY ORDER OBSERVED HERE
+                // eg. Id from BaseModel will attach to the end -> TVP should have Id last
             DataTable output = new DataTable(tableName);
 
             // Default Case

@@ -10,8 +10,8 @@
 
 // #region Module Imports
 
-import { Importer } from "../js/infrastructure/importer.js";
-//import { RatingBuilder } from "../js/infrastructure/ratingBuilder.js";
+import { Importer } from "../infrastructure/importer.js";
+//import { RatingBuilder } from "./infrastructure/ratingBuilder.js";
 
 // #endregion
 
@@ -79,7 +79,7 @@ async function RecipeCardBuilder(sortBy) {
         let containerCard = createElement({
             tag: "a",
             classList: ["recipe-card"],
-            href: `/Recipe/${recipe.Name}`,
+            href: `/Flavor/${recipe.Name}`,
             children: [backCard, frontCard],
             events: [{
                 type: "touchstart",

@@ -12,7 +12,7 @@ namespace IceCream.DataLibrary.DataModels.Recipe.Bundle
         public List<RecipeIngredientModel> Ingredients { get; set; }
         public List<StepModel> Steps { get; set; }
         public List<RecipePhotoModel> Photos { get; set; }
-        public List<RecipeNotesModel> Notes { get; set; }
+        //public List<RecipeNotesModel> Notes { get; set; }
         public List<InventoryModel> Inventory { get; set; }
     }
 }

@@ -9,20 +9,21 @@ using IceCream.DataAccessLibrary.Internal.Bundlers;
 
 namespace IceCreamWeb.Controllers;
 
-public class RecipeController : Controller
+public class FlavorController : Controller
 {
-    private readonly ILogger<RecipeController> _logger;
+    private readonly ILogger<FlavorController> _logger;
     private readonly IRecipeData _data;
 
-    public RecipeController(ILogger<RecipeController> logger, IRecipeData data)
+    public FlavorController(ILogger<FlavorController> logger, IRecipeData data)
     {
         _logger = logger;
         _data = data;
     }
 
-    [Route("Recipe/{RecipeName}")]
+    [Route("Flavor/{RecipeName}")]
     public IActionResult Index(string RecipeName)
     {
+        ViewBag.Cart = true;
         RecipeBundleModel recipeBundle = _data.RecipeSelectOneBundle(RecipeName);
         ViewBag.Title = $"GetCreamy | {recipeBundle.Recipe.Name} Ice Cream";
         ViewBag.RecipeBundle = JsonConvert.SerializeObject(recipeBundle);

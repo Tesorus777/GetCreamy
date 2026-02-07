@@ -1,6 +1,6 @@
 ﻿// #region Module Imports
 
-import Carousel from "../js/infrastructure/importer.js";
+import Carousel from "../infrastructure/importer.js";
 
 // #endregion
 
@@ -11,7 +11,7 @@ const recipe = recipeBundle.Recipe;
 const ingredients = recipeBundle.Ingredients;
 const steps = recipeBundle.Steps;
 const photos = recipeBundle.Photos;
-const notes = recipeBundle.Notes;
+//const notes = recipeBundle.Notes;
 const inventory = recipeBundle.Inventory;
 
 // Pricing
@@ -45,7 +45,7 @@ const quartAddToCart = querySelector("#QuartAddToCartButton");``
 // Other Blocks
 const ingredientsLocation = querySelector("#RecipeIngredients");
 const stepsLocation = querySelector("#RecipeSteps");
-let notesLocation = querySelector("#RecipeNotes");
+//let notesLocation = querySelector("#RecipeNotes");
 
 // #endregion Variables
 
@@ -154,26 +154,26 @@ function LoadRecipeInfo() {
         stepsLocation.append(createElement(stepItem));
     });
     // Notes
-    notes.forEach(note => {
-        // Create Objects
-        let noteLabel = {
-            tag: "span",
-            innerText: `V${note.RecipeVersion}`
-        };
-        let noteBody = {
-            tag: "p",
-            innerText: note.Note,
-            prepend: true,
-            children: [noteLabel]
-        };
-        let noteItem = {
-            tag: "li",
-            classList: ["recipe-single-note"],
-            children: [noteBody]
-        };
-        // Append
-        notesLocation.append(createElement(noteItem));
-    });
+    //notes.forEach(note => {
+    //    // Create Objects
+    //    let noteLabel = {
+    //        tag: "span",
+    //        innerText: `V${note.RecipeVersion}`
+    //    };
+    //    let noteBody = {
+    //        tag: "p",
+    //        innerText: note.Note,
+    //        prepend: true,
+    //        children: [noteLabel]
+    //    };
+    //    let noteItem = {
+    //        tag: "li",
+    //        classList: ["recipe-single-note"],
+    //        children: [noteBody]
+    //    };
+    //    // Append
+    //    notesLocation.append(createElement(noteItem));
+    //});
 }
 
 function FormatPrice(input) {

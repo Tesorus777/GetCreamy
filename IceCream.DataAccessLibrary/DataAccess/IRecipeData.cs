@@ -32,5 +32,7 @@ namespace IceCream.DataAccessLibrary.DataAccess
         List<InventoryModel> InventorySelectOneCurrentStock(string recipeName);
         List<InventoryModel> InventorySelectOrderItemsBulk(List<CartModel> cartContent);
         List<InventoryModel> InventoryDeleteOrderItemsBulk(List<CartModel> cartContent);
+        List<InventoryModel> InventorySelectBulkCurrentStock(List<CartModel> cartContent);
+        List<RecipePhotoModel> RecipePhotoSelectFirstsBulk(List<RecipeNameTypeModel> recipeNames);
     }
 }

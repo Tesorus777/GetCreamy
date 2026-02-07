@@ -3,7 +3,7 @@
 }
 
 @section StyleSheets {
-    <link rel="stylesheet" href="~/css/recipeSingle/recipeSingle.css" />
+    <link rel="stylesheet" href="~/css/flavor/recipePage.css" />
 }
 
 <div class="recipe-single-body">
@@ -68,10 +68,10 @@
         <ol id="RecipeSteps" class="recipe-steps"></ol>
     </div>
 
-    <div class="recipe-single-item recipe-single-notes-container">
+    @* <div class="recipe-single-item recipe-single-notes-container">
         <h3 class="recipe-label">Notes</h3>
         <div id="RecipeNotes" class="recipe-notes"></div>
-    </div>
+    </div> *@
 
 </div>
 
@@ -79,5 +79,5 @@
     <script>
         let recipeBundle = @Html.Raw(ViewBag.RecipeBundle);
     </script>
-    <script type="module" src="~/js/recipePage.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/flavor/recipePage.js" asp-append-version="true"></script>
 }

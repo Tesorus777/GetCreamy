@@ -1,6 +1,38 @@
 ﻿import { Importer } from "../infrastructure/importer.js";
 
 class ShoppingCart {
+    // Operates as a finite state machine that controls the shopping cart
+    // Getters / Setters
+      // Internal Use:
+        // CartDiv: DOM object - created in cshtml
+        // CartDialog: created in cshtml
+        // UserId: set by startupFactory
+        // CartId: same as UserId => used to clear cart if CartId != UserId
+      // Internal/External Use:
+        // Order: array of order objects
+        // OrderCartModel: order array but in the OrderCartModel {Flavor, Pints, Quarts}
+        // OrderLength: total number of pints + quarts
+        // OrderTotalCost: total cost of the order
+    // Methods
+      // Initialize(): creates the cart
+      // UpdateState(): executes the functions required to update visual elements
+      // InputHandler(orderItem): handles -/+ button and typing into quantity inputs
+      // OpenCart(), CloseCart(): opens and closes the cart (can also hit escape or the X or click outside dialog to close)
+        // dispatches event to stop other events where desired (eg. the Caoursel auto scroll)
+      // AddToOrder: determines if an input item is new. Will either make a new object or add it to the existing cart object
+        // runs UpdateState() after execution
+      // UpdateOrder: updates the price, quantity, and max quantity of an existing pint/quart
+        // does NOT run UpdateState() after execution => can't add or remove cart items so there will never be a change of state
+      // RemoveFromOrder: removes an item from the cart by flavor name only
+        // runs UpdateState() after execution
+      // RemoveAllFromOrder: removes everything from the cart
+        // runs UpdateState() after execution
+      // BuildCartObject: builds a cart object when a new item is added
+      // GetPintsByFlavor: Gets the total number of pints in the cart
+      // GetQuartsByFlavor: Gets the total number of quarts in the cart
+    // Things of note:
+        // cartAllowed: bool set in Controller -> _Layout.cshtml
+
     constructor(userId) {
         // #region Set Externally
         this._userId = userId;
@@ -119,6 +151,16 @@ class ShoppingCart {
         localStorage.setItem(this._checkoutKey, JSON.stringify(storageObj));
     }
 
+    get OrderCartModel() {
+        return this.Order.map((item) => {
+            return {
+                Flavor: item[this._flavorKey].replace("-", " "),
+                Pints: item[this._pintKey].Quantity,
+                Quarts: item[this._quartKey].Quantity
+            }
+        });
+    }
+
     get OrderLength() {
         return this.Order.reduce((acc, curr) => {
             acc = acc + curr[this._pintKey].Quantity + curr[this._quartKey].Quantity;
@@ -126,7 +168,7 @@ class ShoppingCart {
         }, 0)
     }
 
-    get OrderSubtotal() {
+    get OrderTotalCost() {
         return this.Order.reduce((acc, curr) => {
             acc = acc + (curr[this._pintKey].Quantity * curr[this._pintKey].Price) + (curr[this._quartKey].Quantity * curr[this._quartKey].Price);
             return acc;
@@ -169,10 +211,12 @@ class ShoppingCart {
     // #region Update Visuals
 
     UpdateState() {
-        this.UpdateSVG();
-        this.UpdateCartContents();
-        this.UpdateItemCount();
-        this.UpdateSubtotal();
+        if (cartAllowed) {
+            this.UpdateSVG();
+            this.UpdateCartContents();
+            this.UpdateItemCount();
+            this.UpdateSubtotal();
+        }
     }
 
     UpdateSVG() {
@@ -226,7 +270,7 @@ class ShoppingCart {
 
     UpdateSubtotal() {
         // Updates the subtotal in the cart
-        this._cartSubtotalContainer.innerText = `Subtotal: $${this.OrderSubtotal}`;
+        this._cartSubtotalContainer.innerText = `Subtotal: $${this.OrderTotalCost}`;
     }
 
     InputHandler(orderItem) {
@@ -252,16 +296,12 @@ class ShoppingCart {
     // #region Open and Close
 
     OpenCart() {
-        // 1) Dispatch open event
-        document.dispatchEvent(this._openCartEvent);
-        // 2) Open the cart
-        this.CartDialog.show();
-        //// 3) Blur anything that has focus on it for some reason
-        //var tmp = document.createElement("input");
-        //document.body.appendChild(tmp);
-        //tmp.focus();
-        //document.body.removeChild(tmp);
-
+        if (cartAllowed && this.OrderLength > 0) {
+            // 1) Dispatch open event
+            document.dispatchEvent(this._openCartEvent);
+            // 2) Open the cart
+            this.CartDialog.show();
+        }
     }
 
     CloseCart() {
@@ -313,11 +353,11 @@ class ShoppingCart {
             let currentItem = this.Order.find(item => item[this._flavorKey] === flavorName.replace(" ", "-"));
             // Set updated pint info
             currentItem[this._pintKey].Price = pintInfo.Price;
-            currentItem[this._pintKey].Quantity += pintInfo.Quantity;
+            currentItem[this._pintKey].Quantity += currentItem[this._pintKey].Quantity < pintInfo.MaxQuantity ? Number(pintInfo.Quantity) : 0;
             currentItem[this._pintKey].MaxQuantity = pintInfo.MaxQuantity;
             // Set updated quart info
             currentItem[this._quartKey].Price = quartInfo.Price;
-            currentItem[this._quartKey].Quantity += Number(quartInfo.Quantity);
+            currentItem[this._quartKey].Quantity += currentItem[this._quartKey].Quantity < quartInfo.MaxQuantity ? Number(quartInfo.Quantity) : 0;
             currentItem[this._quartKey].MaxQuantity = quartInfo.MaxQuantity;
             // Update
             this.UpdateOrder(currentItem);
@@ -348,6 +388,13 @@ class ShoppingCart {
             // Keep items that are not flavorName and have a pint or quart quantity > 0
                 // Logic to remove empty flavors from order: && (item[this._pintKey].Quantity > 0 || item[this._quartKey].Quantity > 0)
             return (item[this._flavorKey] !== flavorName.replace(" ", "-"));
+        });
+        this.UpdateState();
+    }
+
+    RemoveAllFromOrder() {
+        this.Order = this.Order.filter((item) => {
+            return false;
         });
         this.UpdateState();
     }

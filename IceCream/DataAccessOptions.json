@@ -22,6 +22,7 @@
         "Other": {
           "SelectAll": "Inventory_Select",
           "SelectOne": "Inventory_CurrentStockOneRecipe",
+          "SelectBulk": "Inventory_CurrentStockBulkRecipe",
           "SelectOrder": "Inventory_OrderSelectBulk",
           "SelectOrderAndDelete": "Inventory_OrderDeleteBulk"
         }
@@ -53,7 +54,8 @@
         "Delete": "",
         "Other": {
           "SelectOne": "RecipePhotos_SelectOne",
-          "SelectFirsts": "RecipePhotos_SelectFirsts"
+          "SelectFirsts": "RecipePhotos_SelectFirsts",
+          "SelectFirstsBulk": "RecipePhotos_SelectFirstsBulk"
         }
       },
       "Step": {
@@ -74,6 +76,7 @@
         "Update": "Order_UpdateStatus",
         "Delete": "",
         "Other": {
+          "SelectOne": "Order_SelectOne",
           "VerifyReferral": "Order_VerifyReferral",
           "VerifyZipcode": "Order_VerifyZipcode"
         }

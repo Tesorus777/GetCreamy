@@ -1,12 +1,14 @@
 ﻿// #region Imports
 
-import { APIFetcher, StorageClass } from "./startupFactory.js";
+import { APIFetcher, GeoapifyFetcher, StorageClass } from "./startupFactory.js";
 import { ShoppingCart } from "./cart.js";
 
 // #endregion Imports
 
 // #region Variables
 let baseUrl = window.envVar.baseUrl;
+let baseGeoapifyUrl = window.envVar.geoapifyUrl;
+let geoapifyApiKey = window.envVar.geoapifyApiKey;
 
 // #region SelectorFunctions
 
@@ -80,12 +82,16 @@ window.createElement = (obj) => {
     // Return
     return domObject;
 };
+window.createInterval = (eventHandler, timeout) => {
+    return setTimeout(eventHandler, timeout * 1000);
+};
 
 // #endregion SelectorFunctions
 
 // #endregion Variables
 
 const API = new APIFetcher(baseUrl);
+const Geoapify = new GeoapifyFetcher(baseGeoapifyUrl, geoapifyApiKey)
 const UserStorage = new StorageClass(baseUrl);
 const Cart = new ShoppingCart(UserStorage.Cookie.UserId);
 
@@ -94,6 +100,7 @@ const Cart = new ShoppingCart(UserStorage.Cookie.UserId);
 //window.querySelector = querySelector;
 //window.querySelectorAll = querySelectorAll;
 window.API = API;
+window.Geoapify = Geoapify;
 window.UserStorage = UserStorage;
 window.Cart = Cart;
 

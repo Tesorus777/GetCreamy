@@ -7,14 +7,10 @@ using System.Threading.Tasks;
 
 namespace IceCream.DataLibrary.DataModels.User
 {
-    public class UserSuggestionModel : UserModel
+    public class UserSuggestionModel : UserInformationModel
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? Email { get; set; }
         public string? Suggestion { get; set; }
         public string? Notes { get; set; }
-        public bool MailingList { get; set; }
-        public string? Telephone { get; set; } // Honey Pot
+        // need new honey pot field
     }
 }
