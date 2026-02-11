@@ -43,10 +43,10 @@ namespace IceCreamAPI.Controllers
             UserInformationModel userDetails = data["UserDetails"].ToObject<UserInformationModel>();
 
             // 3) Verify an order is allowed to be made
-            if (userDetails.UserId == Guid.Empty || orderDetails.UserId == Guid.Empty)
+            if (userDetails.UserId == Guid.Empty)
             {
                 // If not coming from the checkout page with a valid UserId, do not permit order
-                output.Message = "Please allow first party browser cookies and order through the official page";
+                output.Message = "Please allow first party browser cookies and order through the official checkout page.";
                 return output;
             }
             // Remove this white-listing code on full release -- need to do a default referral[0].MinimumOrderValue of 0 to preserve subsequent logic
@@ -76,9 +76,8 @@ namespace IceCreamAPI.Controllers
                 {
                     // Insert user information after everything is validated
                     output.UserInformation = _user.UserInformationInsert(userDetails);
-                    // Will auto reject if
-                    // zipcode is invalid (verify this)
-                    // referral text is valid (verify this)
+                    orderDetails.UserInfoId = output.UserInformation.Id;
+                    // Will auto reject if zipcode is invalid or referral text is valid
                     output.Order = _user.OrderInsert(orderDetails);
                 } else
                 {

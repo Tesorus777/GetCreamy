@@ -47,7 +47,6 @@ let orderObj = {
         MinimumOrderValue: 0
     },
     OrderDetails: {
-        UserId: UserStorage.Cookie.UserId,
         ReferralText: null,
         Subtotal: null,
         TaxCost: null,

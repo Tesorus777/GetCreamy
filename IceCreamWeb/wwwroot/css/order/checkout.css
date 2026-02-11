@@ -4,6 +4,10 @@ div.main {
     display: flex;
     flex-flow: column nowrap;
 }
+
+footer {
+    left: -50%;
+}
 /* #endregion Global */
 
 /* #region Full Page */
