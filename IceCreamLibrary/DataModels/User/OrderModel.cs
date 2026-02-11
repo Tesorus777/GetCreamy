@@ -9,8 +9,10 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace IceCream.DataLibrary.DataModels.User
 {
-    public class OrderModel : UserModel
+    public class OrderModel : BaseModel
     {
+        [Newtonsoft.Json.JsonIgnore]
+        public long UserInfoId { get; set; }
         public string ReferralText { get; set; }
         public decimal? Subtotal { get; set; }
         public decimal? TaxCost { get; set; }
