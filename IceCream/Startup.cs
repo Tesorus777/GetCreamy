@@ -35,6 +35,11 @@ namespace IceCreamAPI
             }).ConfigureApiBehaviorOptions(options =>
             {
                 options.SuppressMapClientErrors = true;
+            }).AddNewtonsoftJson(options =>
+            {
+                // Default is camelCase -> want PascalCase
+                options.SerializerSettings.ContractResolver =
+                    new Newtonsoft.Json.Serialization.DefaultContractResolver();
             });
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();

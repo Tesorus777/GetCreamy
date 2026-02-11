@@ -13,6 +13,8 @@ namespace IceCream.DataLibrary.DataModels.Recipe
         public int Rating { get; set; }
         public int Version { get; set; }
         internal bool Infused { get; set; }
+        public int BatchQuantity { get; set; }
+        public string BatchQuantityUnit { get; set; }
         public string Description { get; set; }
         public PhotoModel? Photo { get; set; }
 
@@ -20,6 +22,10 @@ namespace IceCream.DataLibrary.DataModels.Recipe
         {
             Rating = 5;
             Description = "Nothing is set in stone, but I promise this flavor is great.";
+        }
+        public void Normalize()
+        {
+            BatchQuantityUnit = $"{BatchQuantityUnit}{(BatchQuantity > 1 ? "s" : "")}";
         }
     }
 }

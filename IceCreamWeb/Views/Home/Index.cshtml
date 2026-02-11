@@ -1,16 +1,34 @@
 ﻿@{
     ViewData["Title"] = "Home";
 
-    string suggestion_firstNamePattern = "[A-Za-z]{1,50}";
-    string suggestion_lastNamePattern = @"^[A-Za-z]+([ \-'][A-Za-z]+)*$"; // check this
+    string suggestion_firstNamePattern = @"[\p{L}\p{M}]+(?:[\s\-][\p{L}\p{M}]+)*";
+    string suggestion_firstNameMinimum = "1";
+    string suggestion_firstNameMaximum = "50";
+    string suggestion_firstNameInvalid = "Please enter your first name using only letters.";
+
+    string suggestion_lastNamePattern = @"[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*";
     string suggestion_lastNameMaximum = "50";
+    string suggestion_lastNameInvalid = "Please enter your last name using only letters.";
+
+    string suggestion_telephonePattern = @"\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{4}";
+    string suggestion_telephoneMinimum = "9";
+    string suggestion_telephoneMaximum = "15";
+    string suggestion_telephoneInvalid = "Please enter a valid phone number.";
+
     string suggestion_emailMaximum = "200";
-    string suggestion_flavorPattern = @"^[A-Za-z][A-Za-z\s]{0,50}$"; // check this
+    string suggestion_emailInvalid = "Please enter a valid email adderss.";
+
+    string suggestion_flavorPattern = @"[\p{L}\p{M}]+(?:[\s\-][\p{L}\p{M}]+)*"; // check this
+    string suggestion_flavorMinimum = "4";
+    string suggestion_flavorMaximum = "50";
+    string suggestion_flavorInvalid = "Please give your flavor a name!";
+
     string suggestion_descriptionMaximum = "2500";
+    string suggestion_descriptionInvalid = "Please describe your flavor and keep it under 2500 characters.";
 }
 
 @section StyleSheets {
-    <link rel="stylesheet" href="~/css/home/homePage.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home/home.css" asp-append-version="true" />
 }
 
 <div class="home-body">
@@ -48,26 +66,29 @@
         <h2>Think you know better? Submit your ideas here!</h2>
 
         <form id="SuggestionForm" onsubmit="return false;" class="home-suggestion-form">
-            <input type="text" id="SuggestionFirstName" class="suggestion-input" placeholder="First Name" pattern="@suggestion_firstNamePattern" required />
-            <input type="text" id="SuggestionLastName" class="suggestion-input" placeholder="Last Name" pattern="@suggestion_lastNamePattern" maxlength="@suggestion_lastNameMaximum" />
-            <input type="tel" id="SuggestionTelephone" class="suggestion-input hp-important" placeholder="Phone Number" />
-            <input type="email" id="SuggestionEmail" class="suggestion-input" placeholder="Email" maxlength="@suggestion_emailMaximum" />
-            <label>Sign up for emails? <input type="checkbox" id="SuggestionMarketing" class="suggestion-marketing-input" /></label>
-            <input type="text" id="SuggestionFlavor" class="suggestion-input" placeholder="Flavor" pattern="@suggestion_flavorPattern" required /></>
+            <input type="text" id="SuggestionFirstName" class="suggestion-input" placeholder="First Name" pattern="@suggestion_firstNamePattern" minlength="@suggestion_firstNameMinimum" maxlength="@suggestion_firstNameMaximum" invalid-text="@suggestion_firstNameInvalid" required/>
+            <input type="text" id="SuggestionLastName" class="suggestion-input" placeholder="Last Name" pattern="@suggestion_lastNamePattern" maxlength="@suggestion_lastNameMaximum" invalid-text="@suggestion_lastNameInvalid" />
+            <input type="tel" id="SuggestionTelephone" class="suggestion-input hp-important" placeholder="Phone Number" pattern="@suggestion_telephonePattern" minlength="@suggestion_telephoneMinimum" maxlength="@suggestion_telephoneMaximum" invalid-text="@suggestion_telephoneInvalid" />
+            <input type="email" id="SuggestionEmail" class="suggestion-input" placeholder="Email" maxlength="@suggestion_emailMaximum" invalid-text="@suggestion_emailInvalid"/>
+            <input type="text" id="SuggestionFlavor" class="suggestion-input" placeholder="Flavor" pattern="@suggestion_flavorPattern" minlength="@suggestion_flavorMinimum" maxlength="@suggestion_flavorMaximum" invalid-text="@suggestion_flavorInvalid" required/></>
             <div class="suggestion-textarea-container">
-                <textarea id="SuggestionDescription" class="suggestion-input suggestion-description-input" placeholder="Describe your flavor" maxlength="@suggestion_descriptionMaximum" required></textarea>
+                <textarea id="SuggestionDescription" class="suggestion-input suggestion-description-input" placeholder="Describe your flavor" maxlength="@suggestion_descriptionMaximum" invalid-text="@suggestion_descriptionInvalid" required></textarea>
                 <div class="suggestion-input-counter-container">
                     <span id="SuggestionDescriptionCount">0</span>
                     <span id="SuggestionDescriptionMaximum">/ @suggestion_descriptionMaximum</span>
                 </div>
             </div>
 
-             <input type="submit" id="SuggestionSubmit", value="Try me!" />
+            <label>Sign up for emails? <input type="checkbox" id="SuggestionMarketing" class="suggestion-marketing-input" /></label>
+
+             <input type="submit" id="SuggestionSubmit" value="Try me!" />
 
              <div class="suggestion-toast-container">
                  <div id="SuggestionToast" class="suggestion-toast">Thank you!</div>
              </div>
         </form>
+
+        <div id="SuggestionLoad" class="loader suggestion-loader"></div>
     </div>
 
     <div id="HomeChangeBlog" class="home-item home-blog">
@@ -84,8 +105,5 @@
         const trending = @Html.Raw(ViewBag.Trending);
         const blog = @Html.Raw(ViewBag.Blog);
     </script>
-    <script type="module" src="~/js/home/featured.js" asp-append-version="true"></script>
-    <script type="module" src="~/js/home/trending.js" asp-append-version="true"></script>
-    <script type="module" src="~/js/home/suggestion.js" asp-append-version="true"></script>
-    <script type="module" src="~/js/home/blog.js" asp-append-version="true"></script>
+    <script type="module" src="js/home/home.js" asp-append-version="true"></script>
 }

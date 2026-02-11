@@ -1,6 +1,7 @@
 ﻿using IceCream.DataAccessLibrary.DataAccess;
 using IceCream.DataAccessLibrary.DataOptions;
 using IceCream.DataAccessLibrary.DataOptions.Recipe;
+using IceCream.DataAccessLibrary.DataOptions.SecretOptions;
 using IceCream.DataAccessLibrary.Internal;
 using IceCream.DataLibrary.Internal;
 
@@ -38,6 +39,9 @@ namespace IceCreamWeb
             services.Configure<RecipeDatabaseOptions>(Configuration.GetSection("RecipeDatabase"));
             services.Configure<UserDatabaseOptions>(Configuration.GetSection("UserDatabase"));
             services.Configure<SiteDatabaseOptions>(Configuration.GetSection("SiteDatabase"));
+            #region Secrets
+            services.Configure<GeoapifyOptions>(Configuration.GetSection("Geoapify"));
+            #endregion Secrets
             #endregion Configuration
         }
 

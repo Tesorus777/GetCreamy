@@ -1,0 +1,18 @@
+﻿using IceCreamLibrary.DataLibrary.DataModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace IceCream.DataLibrary.DataModels.User
+{
+    public class DeliveryZipcodeModel : BaseModel
+    {
+        public string Zipcode { get; set; }
+        public string Name { get; set; }
+        public string County { get; set; }
+        public decimal TaxRate { get; set; }
+        public decimal ShippingCost { get; set; }
+    }
+}

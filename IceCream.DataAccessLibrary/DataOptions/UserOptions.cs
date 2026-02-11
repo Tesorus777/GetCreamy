@@ -9,6 +9,8 @@ namespace IceCream.DataAccessLibrary.DataOptions
 {
     public class UserOptions
     {
+        public GenericOptions Order { get; set; }
+        public GenericOptions OrderContent { get; set; }
         public GenericOptions Storage { get; set; }
         public GenericOptions User { get; set; }
         public GenericOptions UserInfo { get; set; }

@@ -12,6 +12,7 @@ namespace IceCream.DataLibrary.DataModels
         public string Folder { get; set; }
         public string FileName { get; set; }
         public string LowResFileName { get; set; }
+        public string ThumbnailFileName { get; set; }
         public string AltText { get; set; }
         public int SortOrder { get; set; }
 

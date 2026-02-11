@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using IceCreamWeb.Models;
 using IceCream.DataAccessLibrary.DataAccess;
 using Newtonsoft.Json;
+using IceCream.DataLibrary.DataModels.User;
 
 namespace IceCreamWeb.Controllers;
 
@@ -21,25 +22,29 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        ViewBag.Cart = true;
         ViewBag.Featured = JsonConvert.SerializeObject(_recipeData.RecipeSelectFeatured());
         ViewBag.Trending = JsonConvert.SerializeObject(_recipeData.RecipeSelectTrending());
         ViewBag.Blog = JsonConvert.SerializeObject(_siteData.UpcomingProjectSelect());
         return View();
     }
 
-    public IActionResult Recipes()
+    public IActionResult Flavors()
     {
+        ViewBag.Cart = true;
         ViewBag.Recipes = JsonConvert.SerializeObject(_recipeData.RecipeSelect());
         return View();
     }
 
     public IActionResult Ingredients()
     {
+        ViewBag.Cart = true;
         return View();
     }
 
     public IActionResult About()
     {
+        ViewBag.Cart = false;
         return View();
     }
 

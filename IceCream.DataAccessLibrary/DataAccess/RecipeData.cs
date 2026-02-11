@@ -1,10 +1,12 @@
-﻿using IceCream.DataAccessLibrary.DataOptions;
+﻿using Dapper;
+using IceCream.DataAccessLibrary.DataOptions;
 using IceCream.DataAccessLibrary.DataOptions.Recipe;
 using IceCream.DataAccessLibrary.Internal;
 using IceCream.DataAccessLibrary.Internal.Bundlers;
 using IceCream.DataLibrary.DataModels;
 using IceCream.DataLibrary.DataModels.Recipe;
 using IceCream.DataLibrary.DataModels.Recipe.Bundle;
+using IceCream.DataLibrary.Internal;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Xml.Linq;
@@ -26,7 +28,6 @@ namespace IceCream.DataAccessLibrary.DataAccess
         public List<RecipeModel> RecipeSelect(int startNum = 0, int num = 20)
         {
             List<RecipeModel> output = new();
-
             output = _sqlCaller.ExecuteDoubleSelect<RecipeModel, PhotoModel, dynamic>(
                 ConnectionString: _opt.ConnectionString,
                 Parameter: new { Id = startNum, Num = num },
@@ -61,7 +62,6 @@ namespace IceCream.DataAccessLibrary.DataAccess
         public RecipeModel RecipeSelectOne(string Name)
         {
             RecipeModel output = new();
-
             output = _sqlCaller.ExecuteSelect<RecipeModel, dynamic>(
                 ConnectionString: _opt.ConnectionString,
                 Parameter: new { Name = Name },
@@ -74,7 +74,6 @@ namespace IceCream.DataAccessLibrary.DataAccess
         public List<RecipePhotoModel> RecipePhotoSelectOne(string Name)
         {
             List<RecipePhotoModel> output = new();
-
             output = _sqlCaller.ExecuteSelect<RecipePhotoModel, dynamic>(
                 ConnectionString: _opt.ConnectionString,
                 Parameter: new { Name = Name },
@@ -87,7 +86,6 @@ namespace IceCream.DataAccessLibrary.DataAccess
         public List<RecipePhotoModel> RecipePhotoSelectFirsts()
         {
             List<RecipePhotoModel> output = new();
-
             output = _sqlCaller.ExecuteSelect<RecipePhotoModel, dynamic>(
                 ConnectionString: _opt.ConnectionString,
                 Parameter: new { },
@@ -97,38 +95,51 @@ namespace IceCream.DataAccessLibrary.DataAccess
             return output;
         }
 
+        public List<RecipePhotoModel> RecipePhotoSelectFirstsBulk(List<RecipeNameTypeModel> recipeNames)
+        {
+            List<RecipePhotoModel> output = new();
+            var recipeNameDataTable = recipeNames.ToDataTable<RecipeNameTypeModel>("RecipeNameType");
+            output = _sqlCaller.ExecuteSelect<RecipePhotoModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new {RecipeNames = recipeNameDataTable.AsTableValuedParameter("RecipeNameType")},
+                Command: _opt.Options.RecipePhotos.Other["SelectFirstsBulk"]
+            );
+            return output;
+        }
+
         public RecipeBundleModel RecipeSelectOneBundle(string Name)
         {
             RecipeBundleModel output = new();
-
             output = _sqlCaller.ExecuteSelectBundle<RecipeBundleModel, dynamic>(
                 ConnectionString: _opt.ConnectionString,
                 Parameter: new { Name = Name },
                 Command: _opt.Options.Recipe.Other["SelectOneBundle"],
                 Bundler: new RecipeBundler()
             );
-
+            output.Recipe.Normalize();
+            foreach (var item in output.Ingredients)
+            {
+                // Set plurality
+                item.Normalize();
+            }
             return output;
         }
 
         public List<RecipeModel> RecipeSelectFeatured()
         {
             List<RecipeModel> output = new();
-
             output = _sqlCaller.ExecuteDoubleSelect<RecipeModel, PhotoModel, dynamic>(
                 ConnectionString: _opt.ConnectionString,
                 Parameter: new { },
                 Command: _opt.Options.Recipe.Other["SelectOneRandom"],
                 SplitOn: "PhotoId"
             );
-
             return output;
         }
 
         public List<TrendingRecipeModel> RecipeSelectTrending()
         {
             List<TrendingRecipeModel> output = new();
-
             output = _sqlCaller.ExecuteDoubleSelect<TrendingRecipeModel, PhotoModel, dynamic>(
                 ConnectionString: _opt.ConnectionString,
                 Parameter: new { },
@@ -255,6 +266,79 @@ namespace IceCream.DataAccessLibrary.DataAccess
         {
             List<RecipeNotesModel> output = new();
 
+            return output;
+        }
+
+        #endregion
+
+        #region Inventory
+
+        public List<InventoryModel> InventorySelectCurrentStock()
+        {
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { },
+                Command: _opt.Options.Inventory.Select
+            );
+            return output;
+        }
+
+        public List<InventoryModel> InventorySelectAllStock()
+        {
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { },
+                Command: _opt.Options.Inventory.Other["SelectAll"]
+            );
+            return output;
+        }
+
+        public List<InventoryModel> InventorySelectOneCurrentStock(string recipeName)
+        {
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { Name = recipeName },
+                Command: _opt.Options.Inventory.Other["SelectOne"]
+            );
+            return output;
+        }
+
+        public List<InventoryModel> InventorySelectBulkCurrentStock(List<CartModel> cartContent)
+        {
+            var cartContentDataTable = cartContent.ToDataTable<CartModel>("CartContentType");
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { CartContent = cartContentDataTable.AsTableValuedParameter("CartContentType") },
+                Command: _opt.Options.Inventory.Other["SelectBulk"]
+            );
+            return output;
+        }
+
+        public List<InventoryModel> InventorySelectOrderItemsBulk(List<CartModel> cartContent)
+        {
+            var cartContentDataTable = cartContent.ToDataTable<CartModel>("CartContentType");
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { CartContent = cartContentDataTable.AsTableValuedParameter("CartContentType") },
+                Command: _opt.Options.Inventory.Other["SelectOrder"]
+            );
+            return output;
+        }
+
+        public List<InventoryModel> InventoryDeleteOrderItemsBulk(List<CartModel> cartContent)
+        {
+            var cartContentDataTable = cartContent.ToDataTable<CartModel>("CartContentType");
+            List<InventoryModel> output = new();
+            output = _sqlCaller.ExecuteSelect<InventoryModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { CartContent = cartContentDataTable.AsTableValuedParameter("CartContentType") },
+                Command: _opt.Options.Inventory.Other["SelectOrderAndDelete"]
+            );
             return output;
         }
 

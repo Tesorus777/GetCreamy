@@ -1,0 +1,117 @@
+﻿/* #region Container */
+
+div.carousel-container {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    row-gap: 1rem;
+}
+
+/* #endregion Container */
+
+/* #region Viewport */
+
+div.carousel-viewport {
+    display: flex;
+    height: fit-content;
+    position: relative;
+    overflow: hidden;
+    overflow-x: auto;
+    column-gap: 2px;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-radius: 2em;
+}
+
+    div.carousel-viewport::-webkit-scrollbar {
+        display: none;
+    }
+
+.carousel-object {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    width: 100%;
+    object-fit: contain;
+    user-select: none;
+}
+
+/* #endregion Viewport */
+
+/* #region Pagination */
+
+div.carousel-pagination {
+    display: grid;
+    grid-auto-flow: column;
+    justify-items: center;
+    gap: 0.15rem;
+}
+
+svg.carousel-pagination-arrow, svg.carousel-pagination-circle {
+    max-height: 2em;
+    fill: var(--accent-two-medium-light);
+    transition-duration: 0.08s;
+}
+
+    svg.carousel-pagination-arrow:hover, svg.carousel-pagination-circle:hover {
+        cursor: pointer;
+        fill: var(--accent-two-medium-dim);
+        filter: drop-shadow(0 0.15em 0.4em var(--shadow-color));
+        transform: translateY(-0.15em);
+    }
+
+    svg.carousel-pagination-arrow:active, svg.carousel-pagination-circle:active {
+        cursor: pointer;
+        fill: var(--accent-two-medium-dim);
+        transform: translateY(0);
+    }
+
+body:has(dialog[open]) svg.carousel-pagination-arrow, body:has(dialog[open]) svg.carousel-pagination-circle {
+    cursor: default;
+    fill: var(--accent-two-medium-light);
+    filter: none;
+    transform: none;
+}
+
+svg.carousel-pagination-active {
+    fill: var(--accent-two-medium-dim) !important;
+}
+
+
+/* #endregion Pagination*/
+
+/* #region Media Queries */
+
+/* Tablet */
+@media (max-width: 800px) {
+    svg.carousel-pagination-arrow:hover, svg.carousel-pagination-circle:hover {
+        fill: var(--accent-two-medium-dim);
+        filter: unset;
+        transform: translateY(0);
+    }
+
+    svg.carousel-pagination-arrow:active, svg.carousel-pagination-circle:active {
+        fill: var(--accent-two-medium-dim);
+        transform: translateY(0);
+    }
+}
+
+/* Mobile */
+/*@media (max-width: 500px) {
+
+}*/
+
+@media (hover: none) {
+    svg.carousel-pagination-arrow:hover, svg.carousel-pagination-circle:hover {
+        fill: var(--accent-two-medium-light);
+        filter: unset;
+        transform: none;
+    }
+
+    svg.carousel-pagination-arrow:active, svg.carousel-pagination-circle:active {
+        fill: var(--accent-two-medium-dim);
+        transform: none;
+    }
+}
+
+/* #endregion Media Queries */

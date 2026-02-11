@@ -9,6 +9,7 @@ builder.Configuration.AddJsonFile("appsettings.json");
 builder.Configuration.AddJsonFile($"DataAccessOptions.json", optional: false, reloadOnChange: true);
 builder.Configuration.AddJsonFile($"DataAccessOptions.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
 builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile($"Secrets/credentials.json");
 
 var startup = new Startup(builder.Configuration);
 startup.ConfigureServices(builder.Services);
@@ -27,6 +28,7 @@ app.Use(async (context, next) =>
 {
     var config = context.RequestServices.GetRequiredService<IConfiguration>();
     var apiBaseUrl = config["ApiBaseUrl"];
+
 
     // Add to response headers (optional)
     context.Response.Headers["X-Api-Base-Url"] = apiBaseUrl;

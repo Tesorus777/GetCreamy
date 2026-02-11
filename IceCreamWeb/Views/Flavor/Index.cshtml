@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = @ViewBag.Title;
+}
+
+@section StyleSheets {
+    <link rel="stylesheet" href="~/css/flavor/recipePage.css" />
+}
+
+<div class="recipe-single-body">
+
+    <div class="recipe-single-item recipe-single-header">
+
+        <h1 id="RecipeName" class="recipe-single-name"></h1>
+
+        <div id="RecipeStock" class="recipe-stock-container">
+            <h4 id="RecipePintStock" class="recipe-stock-info"></h4>
+            <h4 id="RecipeQuartStock" class="recipe-stock-info"></h4>
+        </div>
+
+        <div class="recipe-add-to-cart-container">
+
+            <h5 class="recipe-add-to-cart-header">Quantity</h5>
+
+            <div id="RecipePintAdd" class="recipe-add-to-cart">
+                <span>
+                    <button id="PintAddMinus" class="add-to-cart minus">
+                        <span>-</span>
+                    </button>
+                    <input id="PintAddInput" type="number" class="add-to-cart" min="1" value="1" />
+                    <button id="PintAddPlus" class="add-to-cart plus">
+                        <span>+</span>
+                    </button>
+                </span>
+                <span>
+                    <button id="PintAddToCartButton" type="button">Add Pint to Cart</button>
+                </span>
+            </div>
+            <div id="RecipeQuartAdd" class="recipe-add-to-cart">
+                <span>
+                    <button id="QuartAddMinus" class="add-to-cart minus">
+                        <span>-</span>
+                    </button>
+                    <input id="QuartAddInput" type="number" class="add-to-cart" min="1" value="1" />
+                    <button id="QuartAddPlus" class="add-to-cart plus">
+                        <span>+</span>
+                    </button>
+                </span>
+                <span>
+                    <button id="QuartAddToCartButton" type="button">Add Quart to Cart</button>
+                </span>
+            </div>
+        </div>
+
+        <h4 id="RecipeDescription" class="recipe-single-description"></h4>
+
+    </div>
+
+    <div id="RecipeImageContainer" class="recipe-single-item recipe-single-image-container"></div>
+
+    <div class="recipe-single-item recipe-single-ingredient-container">
+        <h3 class="recipe-label">Ingredients</h3>
+        <ul id="RecipeIngredients" class="recipe-ingredient-list"></ul>
+        <p class="recipe-batch-size">This recipe makes one and a half quarts</p>
+    </div>
+
+    <div class="recipe-single-item recipe-single-step-container">
+        <h3 class="recipe-label">Steps</h3>
+        <ol id="RecipeSteps" class="recipe-steps"></ol>
+    </div>
+
+    @* <div class="recipe-single-item recipe-single-notes-container">
+        <h3 class="recipe-label">Notes</h3>
+        <div id="RecipeNotes" class="recipe-notes"></div>
+    </div> *@
+
+</div>
+
+@section Scripts {
+    <script>
+        let recipeBundle = @Html.Raw(ViewBag.RecipeBundle);
+    </script>
+    <script type="module" src="~/js/flavor/recipePage.js" asp-append-version="true"></script>
+}
