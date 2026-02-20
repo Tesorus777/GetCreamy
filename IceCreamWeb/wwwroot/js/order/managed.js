@@ -111,11 +111,12 @@ async function GetOrderDiscount(discountCode) {
 // #endregion Order Summary (Right Column)
 
 (async () => {
-    // 1) Get orderDetails from session storage
-    const orderDetails = UserStorage.GetSessionItem("OrderDetails");
-    if (orderDetails == null) {
-        window.location.href = "../Home";
-    }
+    // Verify if orderDetails is null
+    //if (orderDetails == null) {
+    //    window.location.href = "../Home";
+    //}
+    console.log(orderDetails);
+    // 3) Set information
     const userInfo = orderDetails.UserInformation;
     const order = orderDetails.Order;
     const content = orderDetails.OrderContent;
@@ -149,7 +150,7 @@ async function GetOrderDiscount(discountCode) {
         }
         return p;
     });
-    
+
     fixedContent.forEach(item => {
         orderSummary.append(BuildOrderItem(item));
     });

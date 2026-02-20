@@ -1,8 +1,8 @@
 {
   "ConnectionStrings": {
-    "Recipe": "Server=tcp:getcreamy.database.windows.net, 1433;Initial Catalog=Creamy;Encrypt=True; TrustServerCertificate=False; Connection Timeout=30; Authentication=Active Directory Default",
-    "User": "Server=tcp:getcreamy.database.windows.net, 1433;Initial Catalog=Creamy;Encrypt=True; TrustServerCertificate=False; Connection Timeout=30; Authentication=Active Directory Default",
-    "Site": "Server=tcp:getcreamy.database.windows.net, 1433;Initial Catalog=Creamy;Encrypt=True; TrustServerCertificate=False; Connection Timeout=30; Authentication=Active Directory Default"
+    "Recipe": "Data Source=localhost;Initial Catalog=Recipe;Integrated Security=true;TrustServerCertificate=True",
+    "User": "Data Source=localhost;Initial Catalog=User;Integrated Security=true;TrustServerCertificate=True",
+    "Site": "Data Source=localhost;Initial Catalog=Site;Integrated Security=true;TrustServerCertificate=True;"
   },
   "RecipeDatabase": {
     "ConnectionString": "Recipe",
@@ -76,9 +76,12 @@
         "Update": "Order_UpdateStatus",
         "Delete": "",
         "Other": {
+          "PendingEmailSelect": "Order_EmailPendingSelect",
           "SelectOne": "Order_SelectOne",
           "VerifyReferral": "Order_VerifyReferral",
-          "VerifyZipcode": "Order_VerifyZipcode"
+          "VerifyZipcode": "Order_VerifyZipcode",
+          "SelectOneByUniqueId": "Order_SelectOneByUniqueId",
+          "ConfirmPlaced": "Order_ConfirmPlaced"
         }
       },
       "OrderContent": {

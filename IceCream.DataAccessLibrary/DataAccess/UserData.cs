@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using IceCream.DataAccessLibrary.DataOptions;
 using IceCream.DataAccessLibrary.Internal;
+using IceCream.DataAccessLibrary.Internal.Bundlers;
 using IceCream.DataLibrary.DataModels;
+using IceCream.DataLibrary.DataModels.Email;
 using IceCream.DataLibrary.DataModels.Recipe;
 using IceCream.DataLibrary.DataModels.User;
 using IceCream.DataLibrary.Internal;
@@ -26,6 +28,32 @@ namespace IceCream.DataAccessLibrary.DataAccess
         }
 
         #region Order
+
+        #region Email
+
+        public List<OrderPlacedEmailModel> EmailSelectPending(int num)
+        {
+            // runs an email query that gets data from a view
+            // appropriately sorts into EmailModel categories
+            List<OrderPlacedEmailModel> output = new();
+            output = _sqlCaller.ExecuteSelect<OrderPlacedEmailModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { Num = num },
+                Command: _opt.Options.Order.Other["PendingEmailSelect"]
+            );
+            return output;
+        }
+
+        public void EmailSelectDeleted(int num)
+        {
+            // TBD:
+            // Build SQL query (OrderStatusId = deleted id but deleted date is still null
+              // => set deleted date after query execution)
+            // Change output model to something like OrderCanceledEmailModel
+              // and return the model object
+        }
+
+        #endregion
 
         public OrderModel OrderSelectOne(OrderModel order)
         {
@@ -79,6 +107,35 @@ namespace IceCream.DataAccessLibrary.DataAccess
                 Command: _opt.Options.Order.Other["VerifyReferral"]
             );
             return output;
+        }
+
+        public OrderCreationModel OrderGetByUniqueId(Guid? orderUniqueId)
+        {
+            OrderCreationModel output = new();
+            if (orderUniqueId == null)
+            {
+                return output;
+            }
+            output = _sqlCaller.ExecuteSelectBundle<OrderCreationModel, dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { OrderUniqueId = orderUniqueId },
+                Command: _opt.Options.Order.Other["SelectOneByUniqueId"],
+                Bundler: new OrderCreationBundler()
+            );
+            return output;
+        }
+
+        public void OrderUpdateStatus(Guid? orderUniqueId)
+        {
+            if (orderUniqueId == null)
+            {
+                return;
+            }
+            _sqlCaller.Execute<dynamic>(
+                ConnectionString: _opt.ConnectionString,
+                Parameter: new { OrderUniqueId = orderUniqueId },
+                Command: _opt.Options.Order.Other["ConfirmPlaced"]
+            );
         }
 
         #endregion

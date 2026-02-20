@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IceCreamLibrary.DataLibrary.DataModels
 {
-    public class BaseModel
+    public abstract class BaseModel
     {
         [Newtonsoft.Json.JsonIgnore]
         public long Id { get; set; }
