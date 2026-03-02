@@ -2,6 +2,7 @@
 using IceCream.DataLibrary.DataModels.User;
 using IceCreamWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace IceCreamWeb.Controllers
@@ -34,13 +35,14 @@ namespace IceCreamWeb.Controllers
             // Directed here from email
 
             // 1) Get order from OrderUniqueId
-            //OrderCreationModel order = _userData.GetOrderByUniqueId(OrderUniqueId);
-            OrderCreationModel order = new();
+            OrderCreationModel order = _userData.OrderGetByUniqueId(OrderUniqueId);
+            //OrderCreationModel order = new();
 
             if (order.Order.Id != null)
             {
+                _userData.OrderUpdateStatus(OrderUniqueId);
                 ViewBag.Cart = false;
-                ViewBag.Order = order;
+                ViewBag.Order = JsonConvert.SerializeObject(order);
                 return View();
             } else
             {

@@ -11,6 +11,7 @@
     <NoWarn>1701;1702;CS8618;CS8604;CS8601</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.21" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>

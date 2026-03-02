@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IceCream.DataLibrary", "Ice
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IceCream.DataAccessLibrary", "IceCream.DataAccessLibrary\IceCream.DataAccessLibrary.csproj", "{8A1C2481-0708-4093-93F8-E9160B3894EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IceCreamEmail", "IceCreamEmail\IceCreamEmail.csproj", "{2A265F30-CAF3-4555-8C6C-1ED713402917}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{8A1C2481-0708-4093-93F8-E9160B3894EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A1C2481-0708-4093-93F8-E9160B3894EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A1C2481-0708-4093-93F8-E9160B3894EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A265F30-CAF3-4555-8C6C-1ED713402917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A265F30-CAF3-4555-8C6C-1ED713402917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A265F30-CAF3-4555-8C6C-1ED713402917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A265F30-CAF3-4555-8C6C-1ED713402917}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

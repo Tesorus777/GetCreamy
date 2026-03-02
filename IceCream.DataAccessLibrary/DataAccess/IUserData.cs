@@ -1,4 +1,5 @@
-﻿using IceCream.DataLibrary.DataModels.Recipe;
+﻿using IceCream.DataLibrary.DataModels.Email;
+using IceCream.DataLibrary.DataModels.Recipe;
 using IceCream.DataLibrary.DataModels.User;
 
 namespace IceCream.DataAccessLibrary.DataAccess
@@ -6,12 +7,15 @@ namespace IceCream.DataAccessLibrary.DataAccess
     public interface IUserData
     {
         List<StorageModel> CookieSelect(bool onlyRequired);
+        List<OrderPlacedEmailModel> EmailSelectPending(int num);
         List<StorageModel> LocalSelect(bool onlyRequired);
         List<InventoryModel> OrderContentInsert(long orderId, InventoryModel inventoryContent);
         List<InventoryModel> OrderContentInsertBulk(long orderId, List<InventoryModel> inventoryContent);
+        OrderCreationModel OrderGetByUniqueId(Guid? orderUniqueId);
         OrderModel OrderInsert(OrderModel order);
         OrderModel OrderSelectOne(OrderModel order);
         void OrderUpdate(OrderModel order);
+        void OrderUpdateStatus(Guid? orderUniqueId);
         List<OrderReferralModel> OrderVerifyReferral(string referral);
         List<DeliveryZipcodeModel> OrderVerifyZipcode(string zipcode);
         List<StorageModel> SessionSelect(bool onlyRequired);
