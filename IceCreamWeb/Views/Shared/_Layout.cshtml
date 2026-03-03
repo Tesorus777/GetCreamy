@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Creamy</title>
+    <title>@ViewData["Title"] - GetCreamy</title>
     <link rel="stylesheet" href="~/css/site/root.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site/site.css" asp-append-version="true" />
     @await RenderSectionAsync("StyleSheets", required: false)
@@ -45,7 +45,7 @@
 
         <footer>
             <div class="home-footer">
-                &copy; 2025 - GetCreamy - <a asp-area="" asp-controller="Home" asp-action="About">About</a>
+                &copy; @DateTime.Now.Year - GetCreamy - <a asp-area="" asp-controller="Home" asp-action="About">About</a>
             </div>
         </footer>
 

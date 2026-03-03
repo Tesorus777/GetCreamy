@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GetCreamy</title>
+    <link rel="stylesheet" href="~/css/site/root.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("StyleSheets", required: false)
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="logo-container">
+            <div class="logo">
+            </div>
+            <div class="logo-title">
+                <a class="nav-brand" asp-area="" asp-controller="Home" asp-action="Index">GetCreamy</a>
+            </div>
+        </div>
+    </header>
+
+    <div role="main" class="main">
+        @RenderBody()
+
+        <footer>
+            <div class="home-footer">
+                &copy; @DateTime.Now.Year - GetCreamy
+            </div>
+        </footer>
+
+    </div>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
